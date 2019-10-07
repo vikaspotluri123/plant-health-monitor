@@ -1,7 +1,10 @@
 {
-  "name": "Monitor GUI",
+  "name": "monitor-gui",
   "version": "0.1.0",
-  "main": "app.js",
+  "main": "renderer.js",
+  "scripts": {
+    "dev": "electron renderer"
+  },
   "dependencies": {
      "electron": "^6.0.11"
   }
