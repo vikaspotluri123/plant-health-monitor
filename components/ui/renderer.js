@@ -1,7 +1,29 @@
-const {BrowserWindow, app, Tray, Menu} = require('electron');
+const LISTENERS = ['routingCompleted', 'routesUploaded', 'navigationComplete', 'mediaInserted'];
+
+const {BrowserWindow, app, Tray, Menu, ipcMain} = require('electron');
 const path = require('path');
+const backend = require('./wrapper');
 
 let win;
+
+function addListener(eventName) {
+  backend.events.addListener(eventName, data => {
+    if (win) {
+      win.webContents.send('backend-response', [eventName, data]);
+    }
+  });
+}
+
+ipcMain.on('backend-message', (_, [action, args]) => {
+  switch(action) {
+    case 'FLY':
+      return backend.flyOver(...args);
+    default:
+      win.webContents.send('renderer-error', `Unknown action ${action} for backend`);
+  }
+});
+
+LISTENERS.forEach(addListener);
 
 function showWindow() {
   if (win) {

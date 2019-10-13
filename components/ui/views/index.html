@@ -7,6 +7,14 @@
   <title>Drone Plant Health Monitor</title>
 </head>
 <body>
+  const {ipcRenderer} = require('electron');
+  ipcRenderer.on('backend-response', (_, [name, data]) => {
+    console.log(`Backend Response (${name})`, data);
+  });
+
+  ipcRenderer.on('renderer-error', (_, error) => {
+    window.alert(error);
+  });
 
 </body>
 </html>
