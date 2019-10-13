@@ -1,6 +1,17 @@
 {
-  "name": "Monitor Wrapper",
+  "name": "monitor-wrapper",
   "version": "0.1.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "execa": "^2.1.0",
+    "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.12"
+  }
 }
