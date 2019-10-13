@@ -40,8 +40,9 @@ function showWindow() {
     }
   });
 
-  win.loadFile('frontend/index.html');
+  win.center();
   win.removeMenu();
+  win.loadFile('views/index.html');
 
   // Open the DevTools.
   win.webContents.openDevTools();

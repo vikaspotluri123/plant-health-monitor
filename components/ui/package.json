@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "main": "renderer.js",
   "scripts": {
-    "dev": "electron renderer"
+    "dev": "electron ."
   },
   "dependencies": {
-     "electron": "^6.0.11"
+    "electron": "^6.0.11"
   }
 }
