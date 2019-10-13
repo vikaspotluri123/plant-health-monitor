@@ -5,6 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Drone Plant Health Monitor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    section {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      max-width: 95vw;
+    }
+
+    .btn {
+      width: fit-content;
+      margin: 0 auto;
+      margin-top: 0.5rem;
+      color: white;
+      background: maroon;
+      border: none;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s ease-in;
+    }
+
+    .btn:focus,
+    .btn:hover {
+      outline: none;
+      background: darkmagenta;
+    }
+
+    .inline {
+      display: inline-block;
+    }
+
+    #start {
+      text-align: center;
+    }
+
+    #start input {
+      max-width: 5rem;
+      margin: 0.5rem;
+    }
+
+    #status {
+      display: flex;
+      justify-content: space-between;
+      line-height: 1.75rem;
+      padding: 0 1.5rem;
+      border-top: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1><center>Plant Health Monitor v0</center></h1>
+    <section id="start">
+      Enter coordinates to begin:<br/>
+      <div class="inline">
+        <input type="number" min="0" value="25"/>
+        <input type="number" min="0" value="36"/>
+        <input type="number" min="0" value="82"/>
+        <input type="number" min="0" value="29"/>
+      </div>
+      <button class="btn">Launch</button>
+    </section>
+  </main>
+  <footer>
+    <div id="status">
+      <div id="connection-status">Status: <span>Disconnected</span></div>
+      <div id="current-action">Waiting</div>
+    </div>
+  </footer>
+</body>
+<script>
 </head>
 <body>
   const {ipcRenderer} = require('electron');
@@ -17,4 +101,5 @@
   });
 
 </body>
+</script>
 </html>
