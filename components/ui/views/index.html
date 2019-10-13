@@ -45,6 +45,11 @@
       background: darkmagenta;
     }
 
+    .btn[disabled] {
+      cursor: not-allowed;
+      background: lightblue;
+    }
+
     .inline {
       display: inline-block;
     }
@@ -91,19 +96,11 @@
 <script>
   const {ipcRenderer} = require('electron');
   const actionEl = document.getElementById('current-action');
+  const connectionEl = document.getElementById('status').querySelector('span');
 
   const setAction = name => actionEl.textContent = name;
-
-  ipcRenderer.on('backend-response', (_, [name, data]) => {
-    console.log(`Backend Response (${name})`, data);
-    switch (name) {
-      case 'routingCompleted':
-        setAction('Uploading Routes to drone');
-        break;
-      default:
-        setAction(name);
-    }
-  });
+  // @todo: remove this during Blitz
+  const setConnected = isConnected => connectionEl.textContent = isConnected ? 'Connected' : 'Disconnected';
 
   ipcRenderer.on('renderer-error', (_, error) => {
     window.alert(error);
@@ -129,6 +126,16 @@
   }
 
   class StartState extends State {
+    constructor() {
+      super();
+      this._busy = false;
+    }
+
+    set busy(value) {
+      this.btn.disabled = value;
+      this._busy = value;
+    }
+
     init() {
       this.btn = document.querySelector('#start .btn');
       this.on(this.btn, 'click', this.onSubmit.bind(this));
@@ -136,6 +143,7 @@
 
     onSubmit(event) {
       event.preventDefault();
+      this.busy = true;
       console.log('Sending message');
       setAction('Computing best route');
       ipcRenderer.send('backend-message', ['FLY', 'a']);
@@ -144,5 +152,30 @@
 
   const states = [new StartState()];
   states[0].init();
+
+  ipcRenderer.on('backend-response', (_, [name, data]) => {
+    console.log(`Backend Response (${name})`, data);
+    switch (name) {
+      case 'routingCompleted':
+        setAction('Uploading Routes to drone');
+        setConnected(true);
+        break;
+      case 'routesUploaded':
+        setAction('Waiting for drone to return');
+        setConnected(false);
+        break;
+      case 'navigationComplete':
+        setAction('Waiting for SD card to be inserted');
+        setConnected(true);
+        break;
+      case 'mediaInserted':
+        states[0].busy = false;
+        setAction('Words go here');
+        setConnected(true);
+        break;
+      default:
+        setAction(name);
+    }
+  });
 </script>
 </html>
