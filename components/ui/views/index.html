@@ -89,17 +89,60 @@
   </footer>
 </body>
 <script>
-</head>
-<body>
   const {ipcRenderer} = require('electron');
+  const actionEl = document.getElementById('current-action');
+
+  const setAction = name => actionEl.textContent = name;
+
   ipcRenderer.on('backend-response', (_, [name, data]) => {
     console.log(`Backend Response (${name})`, data);
+    switch (name) {
+      case 'routingCompleted':
+        setAction('Uploading Routes to drone');
+        break;
+      default:
+        setAction(name);
+    }
   });
 
   ipcRenderer.on('renderer-error', (_, error) => {
     window.alert(error);
   });
 
-</body>
+  class State {
+    constructor() {
+      this.events = [];
+    }
+
+    init() {
+      // noop
+    }
+
+    on(node, event, fn) {
+      this.events.push([node, event, fn]);
+      node.addEventListener(event, fn);
+    }
+
+    destroy() {
+      this.events.forEach(([thing, name, fn]) => thing.removeEventListener(name, fn));
+    }
+  }
+
+  class StartState extends State {
+    init() {
+      this.btn = document.querySelector('#start .btn');
+      this.on(this.btn, 'click', this.onSubmit.bind(this));
+    }
+
+    onSubmit(event) {
+      event.preventDefault();
+      console.log('Sending message');
+      setAction('Computing best route');
+      ipcRenderer.send('backend-message', ['FLY', 'a']);
+    }
+  }
+
+  const states = [new StartState()];
+  states[0].init();
 </script>
 </html>
