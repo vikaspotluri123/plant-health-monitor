@@ -67,8 +67,27 @@
       display: flex;
       justify-content: space-between;
       line-height: 1.75rem;
-      padding: 0 1.5rem;
       border-top: 1px solid lightgray;
+    }
+
+    #connection-status {
+      padding: 0 1.5rem;
+      transition: all 0.24s ease-in-out;
+      color: white;
+      width: 26ch;
+      text-align: center;
+    }
+
+    #connection-status:not(.connected) {
+      background: firebrick;
+    }
+
+    #connection-status.connected {
+      background: #24b222;
+    }
+
+    #current-action {
+      padding-right: 1.5em;
     }
   </style>
 </head>
@@ -88,19 +107,24 @@
   </main>
   <footer>
     <div id="status">
-      <div id="connection-status">Status: <span>Disconnected</span></div>
-      <div id="current-action">Waiting</div>
+      <div id="connection-status">Drone Status: <span>Disconnected</span></div>
+      <div id="current-action">Status: <span>Waiting for you</span></div>
     </div>
   </footer>
 </body>
 <script>
   const {ipcRenderer} = require('electron');
-  const actionEl = document.getElementById('current-action');
+  const actionEl = document.getElementById('current-action').querySelector('span');
   const connectionEl = document.getElementById('status').querySelector('span');
 
   const setAction = name => actionEl.textContent = name;
-  // @todo: remove this during Blitz
-  const setConnected = isConnected => connectionEl.textContent = isConnected ? 'Connected' : 'Disconnected';
+  // @todo: only do this when the backend updates connection state
+  const setConnected = isConnected => {
+    window.isConnected = isConnected;
+    const classAction = isConnected ? 'add' : 'remove';
+    connectionEl.textContent = isConnected ? 'Connected' : 'Disconnected';
+    connectionEl.parentElement.classList[classAction]('connected');
+  }
 
   ipcRenderer.on('renderer-error', (_, error) => {
     window.alert(error);
@@ -143,6 +167,13 @@
 
     onSubmit(event) {
       event.preventDefault();
+
+      if (!window.isConnected) {
+        window.alert('Not connected to drone');
+        setConnected(true);
+        return;
+      }
+
       this.busy = true;
       console.log('Sending message');
       setAction('Computing best route');
