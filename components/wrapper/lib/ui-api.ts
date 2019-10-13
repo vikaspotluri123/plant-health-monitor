@@ -9,7 +9,7 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   events.emit('routingCompleted');
   await delay(2560);
   events.emit('routesUploaded');
-  await delay(25000);
+  await delay(10000);
   events.emit('navigationComplete');
   await delay(2250);
   events.emit('mediaInserted');
