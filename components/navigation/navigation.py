@@ -3,6 +3,8 @@ from numpy import arange
 LONG_STEP = 0.25
 LAT_STEP = 0.25
 
+LONG_MARGIN = 0.3
+LAT_MARGIN = 0.3
 
 class Coordinate:
     def __init__(self, latitude, longitude):
@@ -17,12 +19,13 @@ class Navigation:
         path = []
         reverseLong = False
 
-        for lat in arange(c3.latitude, c1.latitude, LAT_STEP):
-            for lon in arange(c1.longitude, c2.longitude, LONG_STEP):
+        for lat in arange(c3.latitude-LAT_MARGIN, c1.latitude+LAT_MARGIN, LAT_STEP):
+            for lon in arange(c1.longitude-LONG_MARGIN, c2.longitude+LONG_MARGIN, LONG_STEP):
                 if not reverseLong:
                     path.append(Coordinate(lat, lon))
                 else:
-                    path.append(Coordinate(lat, c2 - lon))
+                    path.append(Coordinate(lat, c2.longitude - lon))
+            reverseLong = not reverseLong
         
         return path
 
