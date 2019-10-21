@@ -1,6 +1,7 @@
+import {TIMEOUT} from './constants';
 const run = require('net-ping');
 
-const session = run.createSession();
+const session = run.createSession({timeout: TIMEOUT});
 
 export default function ping(ip: string): Promise<boolean> {
   return new Promise((resolve) => {
