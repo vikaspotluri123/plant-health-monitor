@@ -14,4 +14,4 @@ try {
   process.exit(1);
 }
 
-export default ping;
+export default ping as (ip: string) => Promise<boolean>;
