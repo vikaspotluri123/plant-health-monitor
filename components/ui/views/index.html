@@ -86,6 +86,10 @@
       background: #24b222;
     }
 
+    #connection-status.unknown {
+      background: #b4b422;
+    }
+
     #current-action {
       padding-right: 1.5em;
     }
@@ -107,7 +111,7 @@
   </main>
   <footer>
     <div id="status">
-      <div id="connection-status">Drone Status: <span>Disconnected</span></div>
+      <div id="connection-status" class="unknown">Drone Status: <span>Checking...</span></div>
       <div id="current-action">Status: <span>Waiting for you</span></div>
     </div>
   </footer>
@@ -118,11 +122,12 @@
   const connectionEl = document.getElementById('status').querySelector('span');
 
   const setAction = name => actionEl.textContent = name;
-  // @todo: only do this when the backend updates connection state
+
   const setConnected = isConnected => {
     window.isConnected = isConnected;
     const classAction = isConnected ? 'add' : 'remove';
     connectionEl.textContent = isConnected ? 'Connected' : 'Disconnected';
+    connectionEl.parentElement.classList.remove('unknown');
     connectionEl.parentElement.classList[classAction]('connected');
   }
 
@@ -189,24 +194,28 @@
     switch (name) {
       case 'routingCompleted':
         setAction('Uploading Routes to drone');
-        setConnected(true);
         break;
       case 'routesUploaded':
         setAction('Waiting for drone to return');
-        setConnected(false);
         break;
       case 'navigationComplete':
         setAction('Waiting for SD card to be inserted');
-        setConnected(true);
         break;
       case 'mediaInserted':
         states[0].busy = false;
         setAction('Words go here');
+        break;
+      case 'drone.connected':
         setConnected(true);
+        break;
+      case 'drone.disconnected':
+        setConnected(false);
         break;
       default:
         setAction(name);
     }
   });
+
+  ipcRenderer.send('connection-status');
 </script>
 </html>

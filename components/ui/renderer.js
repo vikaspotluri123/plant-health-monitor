@@ -1,4 +1,11 @@
-const LISTENERS = ['routingCompleted', 'routesUploaded', 'navigationComplete', 'mediaInserted'];
+const LISTENERS = [
+  'routingCompleted',
+  'routesUploaded',
+  'navigationComplete',
+  'mediaInserted',
+  'drone.disconnected',
+  'drone.connected'
+];
 
 const {BrowserWindow, app, Tray, Menu, ipcMain} = require('electron');
 const path = require('path');
@@ -20,6 +27,15 @@ ipcMain.on('backend-message', (_, [action, args]) => {
       return backend.flyOver(...args);
     default:
       win.webContents.send('renderer-error', `Unknown action ${action} for backend`);
+  }
+});
+
+// When the window requests the connection status, use official channels (backend-response)
+// To update the connection status
+ipcMain.on('connection-status', () => {
+  if (win) {
+    const code = backend.isConnected() ? 'drone.connected' : 'drone.disconnected';
+    win.webContents.send('backend-response', [code]);
   }
 });
 
