@@ -26,14 +26,15 @@ for indx, f in enumerate(os.listdir(path), start=0):
         matches = match.knnMatch(des_right, des_left, k=2)
         good = []
         for m,n in matches:
-            if m.distance < 0.3*n.distance: ## 0.2 may need to be increased ##
+            if m.distance < n.distance: ## 0.2 may need to be increased ##
                 good.append(m)
 
         # parameters of lines
         draw_params = dict(matchColor=(0,255,0), singlePointColor=None, flags=2)
 
         ## draw matches
-        ## img_matches = cv2.drawMatches(img_right, key_right, img_left, key_left, good, None, **draw_params)
+        img_matches = cv2.drawMatches(img_right, key_right, img_left, key_left, good, None, **draw_params)
+        #cv2.imshow("img_matches .jpeg", img_matches)
 
         ## find overlapping region using matches
         MIN_MATCH_COUNT = 10
@@ -57,9 +58,11 @@ for indx, f in enumerate(os.listdir(path), start=0):
         else:
             print("NOT ENOUGH MATCHES AVAILABLE! -", (len(good)/MIN_MATCH_COUNT))
 
-        ## try complete when MIN_MATCH_COUNT was met in above conditional
+        
         dst = cv2.warpPerspective(img_right, M, (img_left.shape[1] + img_right.shape[1], img_left.shape[0]))
         dst[0:img_left.shape[0], 0:img_left.shape[1]] = img_left
+
+        ## test warpPerspective on warped/distorted images
 
         # function to erase black regions (caused by residue of src image)
         def trim(frame):
@@ -82,14 +85,16 @@ for indx, f in enumerate(os.listdir(path), start=0):
         print("write to " + os.listdir(path)[indx+1])
         ## command to save the composite
         cv2.imwrite(os.path.join('input', os.listdir(path)[indx+1]), trimmed)
-        cv2.waitKey(0)
 
     except IndexError:
         print("OKAY - RAN OUT OF IMAGES IN INPUT FILE")
+        final = cv2.bilateralFilter(trimmed,9,75,75)
+        cv2.imwrite(path, final)
+        cv2.waitKey(0)
     except OSError:
         print("ERROR - CORRECT FILE NOT FOUND ON MACHINE")
     except ValueError:
-        print("ERROR - NOT ENOUGH MATCHES FOUND")
+        print("ERROR - NOT ENOUGH MATCHES FOUND - "+len(good)/MIN_MATCH_COUNT)
     except TabError:
         print("ERROR - TYPE ERROR")
     except:
