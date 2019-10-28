@@ -30,7 +30,7 @@ export class DroneConnection {
     console.log('pinging');
     let canConnect = await ping(this.connectionAddr);
     // @todo: remove randomness
-    canConnect = Math.random() <= 0.5;
+    // canConnect = Math.random() <= 0.5;
 
     if (canConnect) {
       if (!this.connected) {
@@ -47,6 +47,6 @@ export class DroneConnection {
   }
 }
 
-const instance = new DroneConnection('192.168.1.101');
+const instance = new DroneConnection('192.168.137.157');
 
 export default instance;
