@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Show drawn polygon area</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='./map.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
+    <style>
+    body {margin:0; padding:0;}
+    #map {position:absolute; top:0; bottom:0; width:100%;}
+    .calculation-box {
+        height: 75px;
+        width: 150px;
+        position: absolute;
+        bottom: 40px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, .9);
+        padding: 15px;
+        text-align: center;
+    }
+    </style>
+    <script>window.mapStyles = [
+    {
+        "id": "gl-draw-line",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+        },
+        "paint": {
+            "line-color": "#FF0000",
+            "line-width": 2
+        }
+    },
+    {
+        "id": "gl-draw-polygon-fill",
+        "type": "fill",
+        "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+        "paint": {
+            "fill-color": "#FF0000",
+            "fill-outline-color": "#D20C0C",
+            "fill-opacity": 0.1
+        }
+    },
+
+    {
+        "id": "gl-draw-polygon-stroke-active",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+        },
+        "paint": {
+            "line-color": "#D20C0C",
+            "line-width": 2
+        }
+    },
+
+    {
+        "id": "gl-draw-polygon-and-line-vertex-halo-active",
+        "type": "circle",
+        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+        "paint": {
+            "circle-radius": 5,
+            "circle-color": "#FFF"
+        }
+    },
+
+    {
+        "id": "gl-draw-polygon-and-line-vertex-active",
+        "type": "circle",
+        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+        "paint": {
+            "circle-radius": 3,
+            "circle-color": "#D20C0C",
+        }
+    },
+
+    {
+        "id": "gl-draw-line-static",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+        },
+        "paint": {
+            "line-color": "#800000",
+            "line-width": 3
+        }
+    },
+    {
+        "id": "gl-draw-polygon-fill-static",
+        "type": "fill",
+        "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+        "paint": {
+            //"fill-color": "#ee0508",
+            "fill-color": "#800000",
+            "fill-opacity": 0.8
+        }
+    },
+    {
+        "id": "gl-draw-polygon-stroke-static",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round"
+        },
+        "paint": {
+            // "line-color": "#c40b0b",
+            "line-color": "#800000",
+            "line-width": 2
+        }
+    }
+]</script>
+</head>
+<body>
+
+<div id='map'></div>
+<div class='calculation-box'>
+    <div id='calculated-area'></div>
+</div>
+
+<script>
+mapboxgl.accessToken = '';
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/satellite-v8', //hosted style id
+    center: [-96.35032990000002, 30.614485977596942], // starting position
+    zoom: 14 // starting zoom
+});
+
+const modes = MapboxDraw.modes;
+modes.rectangle = DrawAssistedRectangle.default;
+let draw = new MapboxDraw({
+    displayControlsDefault: false,
+    modes,
+    controls: {
+        polygon: true,
+        rectangle: true,
+        trash: true
+    },
+    userProperties: true,
+    styles: window.mapStyles
+});
+map.addControl(draw);
+map.addControl(new mapboxgl.ScaleControl());
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
+
+map.on('draw.create', updateArea);
+// map.on('draw.delete', updateArea);
+map.on('draw.update', updateArea);
+draw.changeMode('rectangle');
+map.on('draw.modechange', (e) => {
+    if (e.mode === 'draw_polygon') {
+        draw.changeMode('rectangle');
+    }
+});
+
+function updateArea(e) {
+    const MAX_AREA = 75000;
+    let data = draw.getAll();
+    let answer = document.getElementById('calculated-area');
+    if (data.features.length > 0) {
+        let area = turf.area(data);
+        let rounded_area = Math.round(area*100)/100;
+
+        answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
+        let message;
+        if (rounded_area > MAX_AREA) {
+            message = 'The area you selected is too large. Try again.';
+        } else {
+            const points = [...data.features[0].geometry.coordinates[0]];
+            points.pop();
+            message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
+        }
+
+        setTimeout(() => window.alert(message), 0);
+    }
+}
+
+const points = [[30.554249209066537, -96.411052662235],
+        [30.554249209066537, -96.410693337765],
+        [30.554249209066537, -96.410334013295],
+        [30.554249209066537, -96.409974688825],
+        [30.554249209066537, -96.409615364355],
+        [30.554249209066537, -96.40925603988501],
+        [30.554249209066537, -96.40889671541501],
+        [30.554249209066537, -96.40853739094501],
+        [30.554666790933464, -96.408352337765],
+        [30.554666790933464, -96.40871166223499],
+        [30.554666790933464, -96.40907098670499],
+        [30.554666790933464, -96.40943031117499],
+        [30.554666790933464, -96.40978963564498],
+        [30.554666790933464, -96.41014896011498],
+        [30.554666790933464, -96.41050828458498],
+        [30.554666790933464, -96.41086760905497],
+        [30.55508437280039, -96.411052662235],
+        [30.55508437280039, -96.410693337765],
+        [30.55508437280039, -96.410334013295],
+        [30.55508437280039, -96.409974688825],
+        [30.55508437280039, -96.409615364355],
+        [30.55508437280039, -96.40925603988501],
+        [30.55508437280039, -96.40889671541501],
+        [30.55508437280039, -96.40853739094501],
+        [30.555501954667317, -96.408352337765],
+        [30.555501954667317, -96.40871166223499],
+        [30.555501954667317, -96.40907098670499],
+        [30.555501954667317, -96.40943031117499],
+        [30.555501954667317, -96.40978963564498],
+        [30.555501954667317, -96.41014896011498],
+        [30.555501954667317, -96.41050828458498],
+        [30.555501954667317, -96.41086760905497],
+        [30.555919536534244, -96.411052662235],
+        [30.555919536534244, -96.410693337765],
+        [30.555919536534244, -96.410334013295],
+        [30.555919536534244, -96.409974688825],
+        [30.555919536534244, -96.409615364355],
+        [30.555919536534244, -96.40925603988501],
+        [30.555919536534244, -96.40889671541501],
+        [30.555919536534244, -96.40853739094501],
+        [30.55633711840117, -96.408352337765],
+        [30.55633711840117, -96.40871166223499],
+        [30.55633711840117, -96.40907098670499],
+        [30.55633711840117, -96.40943031117499],
+        [30.55633711840117, -96.40978963564498],
+        [30.55633711840117, -96.41014896011498],
+        [30.55633711840117, -96.41050828458498],
+        [30.55633711840117, -96.41086760905497]]
+const features = points.map((point, idx) => {
+    return {
+        "type": "Feature",
+        "properties": {
+            "title": idx
+        },
+        "geometry": {
+            "coordinates": point.reverse(),
+            "type": "Point"
+        }
+    };
+});
+
+console.log(features);
+
+map.on('load', () => {
+    map.addLayer({
+        "id": "points",
+        "type": "symbol",
+        "source": {
+            "type": "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                features
+            }
+        },
+        "layout": {
+            "icon-image": "{icon}-15",
+            "text-field": "{title}",
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0.6],
+            "text-anchor": "top"
+        }
+    });
+});
+</script>
+
+</body>
+</html>
