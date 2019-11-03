@@ -1,3 +1,12 @@
+const ACTION_MESSAGES = {
+	'routingCompleted': 'Uploading Routes to drone',
+	'routesUploaded': 'Waiting for drone to return',
+	'copyingData': 'Copying images from SD card',
+	'dataCopied': 'Stiching images into one big image',
+	'stichingCompleted': 'Determining at-risk regions',
+	'imageProcessed': 'Successfully completed run',
+};
+
 class IPCManager {
 	constructor() {
 		this._ipc = null;
@@ -29,12 +38,6 @@ class IPCManager {
 	_processResponse(_, [name, data]) {
 		console.log(`Backend Response (${name})`, data);
 		switch (name) {
-			case 'routingCompleted':
-				this.setAction('Uploading Routes to drone');
-				break;
-			case 'routesUploaded':
-				this.setAction('Waiting for drone to return');
-				break;
 			case 'navigationComplete':
 				this.setAction('Waiting for SD card to be inserted');
 				states[1].activate();
@@ -45,20 +48,12 @@ class IPCManager {
 			case 'drone.disconnected':
 				this.setConnected(false);
 				break;
-			case 'copyingData':
-				this.setAction('Copying images from SD card');
-				break;
-			case 'dataCopied':
-				this.setAction('Stiching images into one big image');
-				break;
-			case 'stichingCompleted':
-				this.setAction('Determining at-risk regions');
-				break;
-			case 'imageProcessed':
-				this.setAction('Successfully completed run');
-				break;
 			default:
-				this.setAction(name);
+				if (name in ACTION_MESSAGES) {
+					this.setAction(ACTION_MESSAGES[name]);
+				} else {
+					this.setAction(name);
+				}
 		}
 	}
 }
