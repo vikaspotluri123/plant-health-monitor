@@ -7,12 +7,22 @@
   <title>Drone Plant Health Monitor</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="flex">
   <main>
-    <h1><center>Plant Health Monitor v0</center></h1>
+    <h1 class="center">Plant Health Monitor v0</h1>
     <section id="start">
       Enter coordinates to begin:<br/>
       <button class="btn">Launch</button>
+    </section>
+    <section id="process" class="centered">
+      <p>Insert SD card into computer, and then select drive letter</p>
+      <select name="sd-drive-letter" class="mx-auto">
+        <option value="d">D:</option>
+        <option value="e">E:</option>
+        <option value="f">F:</option>
+        <option value="g">G:</option>
+      </select>
+      <button class="btn mt-1">Process Run</button>
     </section>
   </main>
   <footer>
@@ -28,8 +38,9 @@
     throw new Error('ENOTONLINE');
   }
 
+  // Set up inter-process-communication between the backend and the renderer
   require('./components/ipc').init();
   const states = require('./components/states');
-  states[0].init();
+  states[1].activate();
 </script>
 </html>

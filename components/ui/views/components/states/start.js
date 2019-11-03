@@ -1,6 +1,10 @@
 const State = require('./state');
 
 module.exports = class StartState extends State {
+	get parentNode() {
+		return '#start';
+	}
+	
 	constructor() {
 		super();
 		this._busy = false;
