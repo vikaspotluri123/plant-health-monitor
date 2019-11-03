@@ -16,6 +16,11 @@ module.exports = class StartState extends State {
 		this._busy = value;
 	}
 
+	deactivate(...args) {
+		super.deactivate(...args);
+		this._busy = false;
+	}
+
 	init() {
 		this.btn = document.querySelector('#start .btn');
 		this.on(this.btn, 'click', this.onSubmit.bind(this));

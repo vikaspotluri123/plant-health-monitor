@@ -37,10 +37,7 @@ class IPCManager {
 				break;
 			case 'navigationComplete':
 				this.setAction('Waiting for SD card to be inserted');
-				break;
-			case 'mediaInserted':
-				states[0].busy = false;
-				this.setAction('Words go here');
+				states[1].activate();
 				break;
 			case 'drone.connected':
 				this.setConnected(true);
