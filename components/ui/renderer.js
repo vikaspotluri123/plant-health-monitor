@@ -4,7 +4,11 @@ const LISTENERS = [
   'navigationComplete',
   'mediaInserted',
   'drone.disconnected',
-  'drone.connected'
+  'drone.connected',
+  'copyingData',
+  'dataCopied',
+  'stichingCompleted',
+  'imageProcessed'
 ];
 
 const {BrowserWindow, app, Tray, Menu, ipcMain} = require('electron');
@@ -25,6 +29,8 @@ ipcMain.on('backend-message', (_, [action, args]) => {
   switch(action) {
     case 'FLY':
       return backend.flyOver(...args);
+    case 'process-data':
+      return backend.processImages(...args);
     default:
       win.webContents.send('renderer-error', `Unknown action ${action} for backend`);
   }

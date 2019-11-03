@@ -45,6 +45,18 @@ class IPCManager {
 			case 'drone.disconnected':
 				this.setConnected(false);
 				break;
+			case 'copyingData':
+				this.setAction('Copying images from SD card');
+				break;
+			case 'dataCopied':
+				this.setAction('Stiching images into one big image');
+				break;
+			case 'stichingCompleted':
+				this.setAction('Determining at-risk regions');
+				break;
+			case 'imageProcessed':
+				this.setAction('Successfully completed run');
+				break;
 			default:
 				this.setAction(name);
 		}

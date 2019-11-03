@@ -21,6 +21,18 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   events.emit('navigationComplete');
 }
 
+export async function processImages(letter: string) {
+  events.emit('copyingData');
+  const inputDir = await connectors.clone.exec(letter);
+  events.emit('dataCopied');
+
+  const stitchedFilePath = await connectors.stitching.exec(inputDir);
+  events.emit('stichingCompleted', stitchedFilePath);
+
+  const colorizedFilePath = await connectors.analysis.exec(stitchedFilePath);
+  events.emit('imageProcessed', colorizedFilePath);
+}
+
 export function isConnected() {
   return instance.isConnected;
 }
