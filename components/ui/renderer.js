@@ -1,29 +1,14 @@
-const LISTENERS = [
-  'routingCompleted',
-  'routesUploaded',
-  'navigationComplete',
-  'mediaInserted',
-  'drone.disconnected',
-  'drone.connected',
-  'copyingData',
-  'dataCopied',
-  'stichingCompleted',
-  'imageProcessed'
-];
-
 const {BrowserWindow, app, Tray, Menu, ipcMain} = require('electron');
 const path = require('path');
 const backend = require('./wrapper');
 
 let win;
 
-function addListener(eventName) {
-  backend.events.addListener(eventName, data => {
-    if (win) {
-      win.webContents.send('backend-response', [eventName, data]);
-    }
-  });
-}
+backend.events.addListener('action', (...data) => {
+  if (win) {
+    win.webContents.send('backend-response', data);
+  }
+});
 
 ipcMain.on('backend-message', (_, [action, args]) => {
   switch(action) {
@@ -44,8 +29,6 @@ ipcMain.on('connection-status', () => {
     win.webContents.send('backend-response', [code]);
   }
 });
-
-LISTENERS.forEach(addListener);
 
 function showWindow() {
   if (win) {
