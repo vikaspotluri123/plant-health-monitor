@@ -29,11 +29,20 @@ module.exports = class State {
   activate() {
     this._parentNode.style.display = 'flex';
     this.init();
-    this._previous && this._previous.deactivate();
+    this._previous && this._previous.deactivate(false, true);
+    this._next && this._next.deactivate(true, false);
   }
 
-  deactivate() {
+  deactivate(handleNext = false, handlePrev = false) {
     this._parentNode.style.display = 'none';
+
+    if (handlePrev) {
+      this._previous && this._previous.deactivate(false, true);
+    }
+
+    if (handleNext) {
+      this._next && this._next.activate(true, false);
+    }
   }
 
   init() {
