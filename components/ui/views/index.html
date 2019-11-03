@@ -117,105 +117,13 @@
   </footer>
 </body>
 <script>
-  const {ipcRenderer} = require('electron');
-  const actionEl = document.getElementById('current-action').querySelector('span');
-  const connectionEl = document.getElementById('status').querySelector('span');
-
-  const setAction = name => actionEl.textContent = name;
-
-  const setConnected = isConnected => {
-    window.isConnected = isConnected;
-    const classAction = isConnected ? 'add' : 'remove';
-    connectionEl.textContent = isConnected ? 'Connected' : 'Disconnected';
-    connectionEl.parentElement.classList.remove('unknown');
-    connectionEl.parentElement.classList[classAction]('connected');
+  if (!navigator.onLine) {
+    document.querySelector('#start').innerHTML = "You are not online. Interactive map selection will not work.";
+    throw new Error('ENOTONLINE');
   }
 
-  ipcRenderer.on('renderer-error', (_, error) => {
-    window.alert(error);
-  });
-
-  class State {
-    constructor() {
-      this.events = [];
-    }
-
-    init() {
-      // noop
-    }
-
-    on(node, event, fn) {
-      this.events.push([node, event, fn]);
-      node.addEventListener(event, fn);
-    }
-
-    destroy() {
-      this.events.forEach(([thing, name, fn]) => thing.removeEventListener(name, fn));
-    }
-  }
-
-  class StartState extends State {
-    constructor() {
-      super();
-      this._busy = false;
-    }
-
-    set busy(value) {
-      this.btn.disabled = value;
-      this._busy = value;
-    }
-
-    init() {
-      this.btn = document.querySelector('#start .btn');
-      this.on(this.btn, 'click', this.onSubmit.bind(this));
-    }
-
-    onSubmit(event) {
-      event.preventDefault();
-
-      if (!window.isConnected) {
-        window.alert('Not connected to drone');
-        setConnected(true);
-        return;
-      }
-
-      this.busy = true;
-      console.log('Sending message');
-      setAction('Computing best route');
-      ipcRenderer.send('backend-message', ['FLY', 'a']);
-    }
-  }
-
-  const states = [new StartState()];
+  require('./components/ipc').init();
+  const states = require('./components/states');
   states[0].init();
-
-  ipcRenderer.on('backend-response', (_, [name, data]) => {
-    console.log(`Backend Response (${name})`, data);
-    switch (name) {
-      case 'routingCompleted':
-        setAction('Uploading Routes to drone');
-        break;
-      case 'routesUploaded':
-        setAction('Waiting for drone to return');
-        break;
-      case 'navigationComplete':
-        setAction('Waiting for SD card to be inserted');
-        break;
-      case 'mediaInserted':
-        states[0].busy = false;
-        setAction('Words go here');
-        break;
-      case 'drone.connected':
-        setConnected(true);
-        break;
-      case 'drone.disconnected':
-        setConnected(false);
-        break;
-      default:
-        setAction(name);
-    }
-  });
-
-  ipcRenderer.send('connection-status');
 </script>
 </html>
