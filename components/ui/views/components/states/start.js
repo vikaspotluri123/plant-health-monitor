@@ -1,4 +1,5 @@
 const State = require('./state');
+const ipc = require('../ipc');
 
 module.exports = class StartState extends State {
 	get parentNode() {
@@ -25,13 +26,13 @@ module.exports = class StartState extends State {
 
 		if (!window.isConnected) {
 			window.alert('Not connected to drone');
-			setConnected(true);
+			ipc.setConnected(true);
 			return;
 		}
 
 		this.busy = true;
 		console.log('Sending message');
-		setAction('Computing best route');
-		ipcRenderer.send('backend-message', ['FLY', 'a']);
+		ipc.setAction('Computing best route');
+		ipc.sendMessage(['FLY', 'a']);
 	}
 }
