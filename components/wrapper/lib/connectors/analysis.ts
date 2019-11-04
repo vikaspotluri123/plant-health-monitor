@@ -16,6 +16,6 @@ export default class AnalysisConnector extends Base {
   async exec(inputDir: PathLike): Promise<PathLike> {
     console.log('Processing image in', inputDir);
     await delay(1000);
-    return 'C:\\code\\plant-health-monitor\\img\\for-procesing\\img.png';
+    return 'C:\\code\\plant-health-monitor\\img\\for-processing\\processed.png';
   }
 }

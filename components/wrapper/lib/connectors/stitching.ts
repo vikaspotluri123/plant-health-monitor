@@ -16,7 +16,7 @@ export default class StitchingConnector extends Base {
 
   async exec(inputDir: PathLike): Promise<PathLike> {
     console.log('Processing data in', inputDir);
-    await delay(1000);
-    return 'C:\\code\\plant-health-monitor\\img\\for-procesing\\img.png';
+    await delay(5000);
+    return 'C:\\code\\plant-health-monitor\\img\\for-processing\\img.jpg';
   }
 }

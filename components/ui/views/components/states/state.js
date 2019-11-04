@@ -41,7 +41,7 @@ module.exports = class State {
     }
 
     if (handleNext) {
-      this._next && this._next.activate(true, false);
+      this._next && this._next.deactivate(true, false);
     }
   }
 

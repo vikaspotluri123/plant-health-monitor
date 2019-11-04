@@ -3,7 +3,6 @@ const ACTION_MESSAGES = {
 	'routesUploaded': 'Waiting for drone to return',
 	'copyingData': 'Copying images from SD card',
 	'dataCopied': 'Stiching images into one big image',
-	'stichingCompleted': 'Determining at-risk regions',
 	'imageProcessed': 'Successfully completed run',
 };
 
@@ -47,6 +46,16 @@ class IPCManager {
 				break;
 			case 'drone.disconnected':
 				this.setConnected(false);
+				break;
+			case 'stichingCompleted':
+				this.setAction('Determining at-risk regions');
+				states[2].stitchedImage = data;
+				states[2].activate();
+				break;
+			case 'imageProcessed': 
+				this.setAction('Successfully completed run');
+				states[2].highlightImage = data;
+				states[2].activate();
 				break;
 			default:
 				if (name in ACTION_MESSAGES) {

@@ -7,6 +7,7 @@ body {
 
 main {
   flex: 1;
+  padding-bottom: 2.5em;
 }
 
 section {
@@ -59,6 +60,10 @@ section {
   justify-content: space-between;
   line-height: 1.75rem;
   border-top: 1px solid lightgray;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
 }
 
 #connection-status {

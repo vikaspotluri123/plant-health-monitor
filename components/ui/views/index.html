@@ -11,7 +11,7 @@
   <main>
     <h1 class="center">Plant Health Monitor v0</h1>
     <section id="start">
-      Enter coordinates to begin:<br/>
+      <iframe src="../map.html" style="height: 84vh"></iframe>
       <button class="btn">Launch</button>
     </section>
     <section id="process" class="centered">
@@ -24,12 +24,14 @@
       </select>
       <button class="btn mt-1">Process Run</button>
     </section>
+    <section id="results">
+      <img id="stitched" />
+      <img id="marked" />
+    </section>
   </main>
-  <footer>
-    <div id="status">
-      <div id="connection-status" class="unknown">Drone Status: <span>Checking...</span></div>
-      <div id="current-action">Status: <span>Waiting for you</span></div>
-    </div>
+  <footer id="status">
+    <div id="connection-status" class="unknown">Drone Status: <span>Checking...</span></div>
+    <div id="current-action">Status: <span>Waiting for you</span></div>
   </footer>
 </body>
 <script>
