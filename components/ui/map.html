@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8' />
-    <title>Show drawn polygon area</title>
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
-    <script src='./map.js'></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
-    <style>
+	<meta charset='utf-8' />
+	<title>Show drawn polygon area</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+	<script src='./map.js'></script>
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
+	<style>
     body {margin:0; padding:0;}
     #map {position:absolute; top:0; bottom:0; width:100%;}
     .calculation-box {
@@ -24,22 +24,21 @@
         padding: 15px;
         text-align: center;
     }
-    </style>
-    <script>window.mapStyles = [
-    {
-        "id": "gl-draw-line",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
-        "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-        },
-        "paint": {
-            "line-color": "#FF0000",
-            "line-width": 2
-        }
-    },
-    {
+	</style>
+	<script>
+		window.mapStyles = [{
+			"id": "gl-draw-line",
+			"type": "line",
+			"filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+			"layout": {
+					"line-cap": "round",
+					"line-join": "round"
+			},
+			"paint": {
+					"line-color": "#FF0000",
+					"line-width": 2
+			}
+		}, {
         "id": "gl-draw-polygon-fill",
         "type": "fill",
         "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
@@ -48,9 +47,7 @@
             "fill-outline-color": "#D20C0C",
             "fill-opacity": 0.1
         }
-    },
-
-    {
+    }, {
         "id": "gl-draw-polygon-stroke-active",
         "type": "line",
         "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
@@ -62,9 +59,7 @@
             "line-color": "#D20C0C",
             "line-width": 2
         }
-    },
-
-    {
+    }, {
         "id": "gl-draw-polygon-and-line-vertex-halo-active",
         "type": "circle",
         "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
@@ -72,9 +67,7 @@
             "circle-radius": 5,
             "circle-color": "#FFF"
         }
-    },
-
-    {
+    }, {
         "id": "gl-draw-polygon-and-line-vertex-active",
         "type": "circle",
         "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
@@ -82,9 +75,7 @@
             "circle-radius": 3,
             "circle-color": "#D20C0C",
         }
-    },
-
-    {
+    }, {
         "id": "gl-draw-line-static",
         "type": "line",
         "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
@@ -96,8 +87,7 @@
             "line-color": "#800000",
             "line-width": 3
         }
-    },
-    {
+    }, {
         "id": "gl-draw-polygon-fill-static",
         "type": "fill",
         "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
@@ -106,8 +96,7 @@
             "fill-color": "#800000",
             "fill-opacity": 0.8
         }
-    },
-    {
+    }, {
         "id": "gl-draw-polygon-stroke-static",
         "type": "line",
         "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
@@ -133,32 +122,32 @@
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiMjAxOS0xNy10YW11LWVjZW4tY2Fwc3RvbmUiLCJhIjoiY2syYXI3cnZrMWU2NzNjbnBycDZqanVoMyJ9.teXKI51LkDHSgKLwTeryfA';
 const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/satellite-v8', //hosted style id
-    center: [30.555539999999997, -96.40986].reverse(), // starting position
-    zoom: 14 // starting zoom
+	container: 'map',
+	style: 'mapbox://styles/mapbox/satellite-v8', //hosted style id
+	center: [30.555539999999997, -96.40986].reverse(), // starting position
+	zoom: 14 // starting zoom
 });
 
 const modes = MapboxDraw.modes;
 modes.rectangle = DrawAssistedRectangle.default;
 let draw = new MapboxDraw({
-    displayControlsDefault: false,
-    modes,
-    controls: {
-        polygon: true,
-        rectangle: true,
-        trash: true
-    },
-    userProperties: true,
-    styles: window.mapStyles
+	displayControlsDefault: false,
+	modes,
+	controls: {
+		polygon: true,
+		rectangle: true,
+		trash: true
+	},
+	userProperties: true,
+	styles: window.mapStyles
 });
 map.addControl(draw);
 map.addControl(new mapboxgl.ScaleControl());
 map.addControl(new mapboxgl.GeolocateControl({
-    positionOptions: {
-        enableHighAccuracy: true
-    },
-    trackUserLocation: true
+	positionOptions: {
+		enableHighAccuracy: true
+	},
+	trackUserLocation: true
 }));
 
 map.on('draw.create', updateArea);
@@ -166,32 +155,32 @@ map.on('draw.create', updateArea);
 map.on('draw.update', updateArea);
 draw.changeMode('rectangle');
 map.on('draw.modechange', (e) => {
-    if (e.mode === 'draw_polygon') {
-        draw.changeMode('rectangle');
-    }
+	if (e.mode === 'draw_polygon') {
+		draw.changeMode('rectangle');
+	}
 });
 
 function updateArea(e) {
-    const MAX_AREA = 75000;
-    let data = draw.getAll();
-    let answer = document.getElementById('calculated-area');
-    if (data.features.length > 0) {
-        let area = turf.area(data);
-        let rounded_area = Math.round(area*100)/100;
+	const MAX_AREA = 75000;
+	let data = draw.getAll();
+	let answer = document.getElementById('calculated-area');
+	if (data.features.length > 0) {
+		let area = turf.area(data);
+		let rounded_area = Math.round(area*100)/100;
 
-        answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
-        let message;
-        if (rounded_area > MAX_AREA) {
-            message = 'The area you selected is too large. Try again.';
-        } else {
-            const points = [...data.features[0].geometry.coordinates[0]];
-            points.pop();
-            message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
-        }
-        console.log(message);
+		answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
+		let message;
+		if (rounded_area > MAX_AREA) {
+			message = 'The area you selected is too large. Try again.';
+		} else {
+			const points = [...data.features[0].geometry.coordinates[0]];
+			points.pop();
+			message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
+		}
+		console.log(message);
 
-        setTimeout(() => window.alert(message), 0);
-    }
+		setTimeout(() => window.alert(message), 0);
+	}
 }
 
 const points = [[30.55558, -96.40986],
@@ -214,41 +203,40 @@ const points = [[30.55558, -96.40986],
 [30.55392285714286, -96.40917428571431],
 [30.553591428571433, -96.40903714285717],
 [30.55370476190477, -96.40867380952383],
-[30.553818095238103, -96.4083104761905]]
+[30.553818095238103, -96.4083104761905]];
+
 const features = points.map((point, idx) => {
-    return {
-        "type": "Feature",
-        "properties": {
-            "title": idx
-        },
-        "geometry": {
-            "coordinates": point.reverse(),
-            "type": "Point"
-        }
-    };
+	return {
+		"type": "Feature",
+		"properties": {
+				"title": idx
+		},
+		"geometry": {
+				"coordinates": point.reverse(),
+				"type": "Point"
+		}
+	};
 });
 
-console.log(features);
-
 map.on('load', () => {
-    map.addLayer({
-        "id": "points",
-        "type": "symbol",
-        "source": {
-            "type": "geojson",
-            "data": {
-                "type": "FeatureCollection",
-                features
-            }
-        },
-        "layout": {
-            "icon-image": "{icon}-15",
-            "text-field": "{title}",
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.6],
-            "text-anchor": "top"
-        }
-    });
+	map.addLayer({
+		"id": "points",
+		"type": "symbol",
+		"source": {
+				"type": "geojson",
+				"data": {
+						"type": "FeatureCollection",
+						features
+				}
+		},
+		"layout": {
+				"icon-image": "{icon}-15",
+				"text-field": "{title}",
+				"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+				"text-offset": [0, 0.6],
+				"text-anchor": "top"
+		}
+	});
 });
 </script>
 
