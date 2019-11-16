@@ -21,12 +21,15 @@
 		}
 
 		#map {
-			height: 90vh;
+			height: 100%;
 		}
 
 		.controls {
 			margin: 0 auto;
-			padding: 2.5vh 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-wrap: wrap;
 		}
 
 		.btn {
@@ -42,7 +45,12 @@
 				0 10px 10px -5px rgba(0, 0, 0, 0.04);
 			border-radius: 5px;
 			cursor: pointer;
-			transition: background 0.1s ease-in;
+			transition: all 0.1s ease-in;
+		}
+
+		.btn.active {
+			transform: scale(1.05);
+			background: fuchsia !important;
 		}
 
 		.btn:focus,
@@ -56,8 +64,25 @@
 			background: lightblue;
 		}
 
-		.mapboxgl-ctrl {
-			display: none;
+		.center {
+			text-align: center;
+		}
+
+		.box {
+			margin: 0.5em 1em;
+			border: 0.5px dotted magenta;
+		}
+
+		.box h2 {
+			margin: 0.25em auto;
+		}
+
+		.box button {
+			margin: 0.5rem;
+		}
+
+		.mapboxgl-ctrl:not(.mapboxgl-ctrl-scale) {
+			display: none !important;
 		}
 	</style>
 	<script>
@@ -66,84 +91,84 @@
 			"type": "line",
 			"filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
 			"layout": {
-					"line-cap": "round",
-					"line-join": "round"
+				"line-cap": "round",
+				"line-join": "round"
 			},
 			"paint": {
-					"line-color": "#FF0000",
-					"line-width": 2
+				"line-color": "#FF0000",
+				"line-width": 2
 			}
 		}, {
-        "id": "gl-draw-polygon-fill",
-        "type": "fill",
-        "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
-        "paint": {
-            "fill-color": "#FF0000",
-            "fill-outline-color": "#D20C0C",
-            "fill-opacity": 0.1
-        }
+			"id": "gl-draw-polygon-fill",
+			"type": "fill",
+			"filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+			"paint": {
+				"fill-color": "#FF0000",
+				"fill-outline-color": "#D20C0C",
+				"fill-opacity": 0.1
+			}
     }, {
-        "id": "gl-draw-polygon-stroke-active",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
-        "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-        },
-        "paint": {
-            "line-color": "#D20C0C",
-            "line-width": 2
-        }
+			"id": "gl-draw-polygon-stroke-active",
+			"type": "line",
+			"filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+			"layout": {
+				"line-cap": "round",
+				"line-join": "round"
+			},
+			"paint": {
+				"line-color": "#D20C0C",
+				"line-width": 2
+			}
     }, {
-        "id": "gl-draw-polygon-and-line-vertex-halo-active",
-        "type": "circle",
-        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
-        "paint": {
-            "circle-radius": 5,
-            "circle-color": "#FFF"
-        }
+			"id": "gl-draw-polygon-and-line-vertex-halo-active",
+			"type": "circle",
+			"filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+			"paint": {
+				"circle-radius": 5,
+				"circle-color": "#FFF"
+			}
     }, {
-        "id": "gl-draw-polygon-and-line-vertex-active",
-        "type": "circle",
-        "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
-        "paint": {
-            "circle-radius": 3,
-            "circle-color": "#D20C0C",
-        }
+			"id": "gl-draw-polygon-and-line-vertex-active",
+			"type": "circle",
+			"filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+			"paint": {
+				"circle-radius": 3,
+				"circle-color": "#D20C0C",
+			}
     }, {
-        "id": "gl-draw-line-static",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
-        "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-        },
-        "paint": {
-            "line-color": "#800000",
-            "line-width": 3
-        }
+			"id": "gl-draw-line-static",
+			"type": "line",
+			"filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
+			"layout": {
+				"line-cap": "round",
+				"line-join": "round"
+			},
+			"paint": {
+				"line-color": "#800000",
+				"line-width": 3
+			}
     }, {
-        "id": "gl-draw-polygon-fill-static",
-        "type": "fill",
-        "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
-        "paint": {
-            //"fill-color": "#ee0508",
-            "fill-color": "#800000",
-            "fill-opacity": 0.8
-        }
+			"id": "gl-draw-polygon-fill-static",
+			"type": "fill",
+			"filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+			"paint": {
+				//"fill-color": "#ee0508",
+				"fill-color": "#800000",
+				"fill-opacity": 0.8
+			}
     }, {
-        "id": "gl-draw-polygon-stroke-static",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
-        "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-        },
-        "paint": {
-            // "line-color": "#c40b0b",
-            "line-color": "#800000",
-            "line-width": 2
-        }
+			"id": "gl-draw-polygon-stroke-static",
+			"type": "line",
+			"filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
+			"layout": {
+				"line-cap": "round",
+				"line-join": "round"
+			},
+			"paint": {
+					// "line-color": "#c40b0b",
+				"line-color": "#800000",
+				"line-width": 2
+			}
     }
 ]</script>
 </head>
@@ -151,39 +176,48 @@
 
 <div id='map'></div>
 <div class="controls">
-	<button class="btn" id="delete">Clear Map</button>
-	<button class="btn" disabled id="draw">Draw Mode</button>
-	<button class="btn" disabled id="pan">Pan Mode</button>
-	<button class="btn" disabled id="move">Move plot</button>
-	<p>Area of selected region (m<sup>2</sup>): <span id="calculated-area">N/A</span></p>
+	<div class="box">
+		<h2 class="center">Actions</h2>
+		<button class="btn" disabled id="delete">Clear Map</button>
+		<button class="btn" disabled id="move">Move plot</button>
+		<button class="btn" disabled id="locate">Center on Current Location</button>
+	</div>
+	<div class="box">
+		<h2 class="center">Modes</h2>
+		<button class="btn" disabled id="draw">Draw Mode</button>
+		<button class="btn" disabled id="pan">Pan Mode</button>
+	</div>
+	<p class="center">Region Area (m<sup>2</sup>): <span id="calculated-area">N/A</span></p>
 </div>
 
 <script>
-	function renderPoints() {
-		const points = [
-			[30.55558, -96.40986],
-			[30.555693333333334, -96.40949666666666],
-			[30.55580666666667, -96.40913333333332],
-			[30.555475238095244, -96.40899619047619],
-			[30.555361904761906, -96.40935952380953],
-			[30.55524857142857, -96.40972285714287],
-			[30.554917142857143, -96.40958571428573],
-			[30.55503047619048, -96.40922238095239],
-			[30.555143809523816, -96.40885904761905],
-			[30.554812380952388, -96.4087219047619],
-			[30.554699047619053, -96.40908523809524],
-			[30.554585714285714, -96.40944857142858],
-			[30.55425428571429, -96.40931142857144],
-			[30.554367619047625, -96.4089480952381],
-			[30.55448095238096, -96.40858476190476],
-			[30.55414952380953, -96.40844761904764],
-			[30.554036190476197, -96.40881095238097],
-			[30.55392285714286, -96.40917428571431],
-			[30.553591428571433, -96.40903714285717],
-			[30.55370476190477, -96.40867380952383],
-			[30.553818095238103, -96.4083104761905]
-		];
+	const INTERACTIVE_PROPERTIES = ['boxZoom', 'doubleClickZoom', 'dragPan', 'dragRotate', 'scrollZoom', 'touchZoomRotate'];
+	const MAX_AREA = 75000;
+	const DEFAULT_POINTS = [
+		[30.55558, -96.40986],
+		[30.555693333333334, -96.40949666666666],
+		[30.55580666666667, -96.40913333333332],
+		[30.555475238095244, -96.40899619047619],
+		[30.555361904761906, -96.40935952380953],
+		[30.55524857142857, -96.40972285714287],
+		[30.554917142857143, -96.40958571428573],
+		[30.55503047619048, -96.40922238095239],
+		[30.555143809523816, -96.40885904761905],
+		[30.554812380952388, -96.4087219047619],
+		[30.554699047619053, -96.40908523809524],
+		[30.554585714285714, -96.40944857142858],
+		[30.55425428571429, -96.40931142857144],
+		[30.554367619047625, -96.4089480952381],
+		[30.55448095238096, -96.40858476190476],
+		[30.55414952380953, -96.40844761904764],
+		[30.554036190476197, -96.40881095238097],
+		[30.55392285714286, -96.40917428571431],
+		[30.553591428571433, -96.40903714285717],
+		[30.55370476190477, -96.40867380952383],
+		[30.553818095238103, -96.4083104761905]
+	];
 
+	function renderPoints(points = DEFAULT_POINTS) {
 		const features = points.map((point, idx) => {
 			return {
 				"type": "Feature",
@@ -229,9 +263,9 @@ const map = new mapboxgl.Map({
 	zoom: 14
 });
 
-const modes = MapboxDraw.modes;
+const {modes} = MapboxDraw;
 modes.rectangle = DrawAssistedRectangle.default;
-let draw = new MapboxDraw({
+const draw = new MapboxDraw({
 	displayControlsDefault: false,
 	modes,
 	controls: {
@@ -243,7 +277,7 @@ let draw = new MapboxDraw({
 	userProperties: false,
 	styles: window.mapStyles
 });
-const g = new mapboxgl.GeolocateControl({
+const geoLocate = new mapboxgl.GeolocateControl({
 	positionOptions: {
 		enableHighAccuracy: true
 	},
@@ -252,41 +286,41 @@ const g = new mapboxgl.GeolocateControl({
 
 map.addControl(draw);
 map.addControl(new mapboxgl.ScaleControl());
-map.addControl(g);
+map.addControl(geoLocate);
 
 map.on('draw.create', updateArea);
-// map.on('draw.delete', updateArea);
 map.on('draw.update', updateArea);
-map.on('draw.modechange', (e) => {
-	if (e.mode === 'draw_polygon') {
-		draw.changeMode('rectangle');
-	}
-});
 
 const areaNode = document.getElementById('calculated-area');
 function updateArea(e) {
-	const MAX_AREA = 75000;
 	const data = draw.getAll();
-	if (data.features.length > 0) {
-		const area = Math.round(turf.area(data) * 100) / 100;
-		areaNode.textContent = area;
-		let message;
-		if (area > MAX_AREA) {
-			message = 'The area you selected is too large. Try again.';
-		} else {
-			const points = [...data.features[0].geometry.coordinates[0]];
-			points.pop();
-			message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
-		}
-		console.log(message);
-
-		setTimeout(() => {
-			draw.changeMode('simple_select');
-			window.alert(message)
-			reRender();
-		}, 0);
+	if (data.features.length === 0) {
+		areaNode.textContent = 'N/A';
+		return;
 	}
 
+	const area = Math.round(turf.area(data) * 100) / 100;
+	areaNode.textContent = area;
+	let message;
+	const isBad = area > MAX_AREA;
+	if (isBad) {
+		message = 'The area you selected is too large. Try again.';
+	} else {
+		const points = [...data.features[0].geometry.coordinates[0]];
+		points.pop();
+		message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
+	}
+
+	setTimeout(() => {
+		if (isBad) {
+			clearMap();
+		} else {
+			switchToPan();
+		}
+
+		console.log(message);
+		window.alert(message)
+	}, 0);
 }
 
 renderPoints();
@@ -299,59 +333,73 @@ const buttons = {
 };
 
 const active = {
+	draw() {
+		return draw.getMode() === 'rectangle';
+	},
+
+	pan() {
+		return draw.getMode() === 'simple_select';
+	}
+}
+
+const clickable = {
 	clear() {
 		const all = draw.getAll().features;
 		return all.length >= 1 && all[0].geometry.coordinates[0].length === 5;
 	},
 
-	// Draw SHOULD be active when clear is NOT, OR if we're not currently drawing a rectangle
+	// Draw SHOULD be clickable when clear is NOT, OR if we're not currently drawing a rectangle
 	draw() {
-		return !active.clear() || draw.getMode() !== 'rectangle';
+		return !clickable.clear() && draw.getMode() !== 'rectangle';
 	},
 
 	pan() {
-		return draw.getMode !== 'simple_select';
+		return draw.getMode() !== 'simple_select';
 	}
+}
+
+function clearMap() {
+	draw.deleteAll();
+	updateArea();
+	draw.changeMode('rectangle');
+	reRender()
+}
+
+function switchToPan() {
+	draw.changeMode('simple_select');
+	for (const prop of INTERACTIVE_PROPERTIES) {
+		map[prop].enable();
+	}
+
+	reRender();
+}
+
+function switchToDraw() {
+	draw.changeMode('rectangle');
+	for (const prop of INTERACTIVE_PROPERTIES) {
+		map[prop].disable();
+	}
+
+	reRender()
 }
 
 function reRender() {
-	console.log('Rerendering...');
+	for (const key in clickable) {
+		buttons[key].disabled = !clickable[key]();
+	}
+
 	for (const key in active) {
-		if (active[key]()) {
-			console.log({key, active: true});
-			buttons[key].classList.add('active');
-			buttons[key].disabled = false;
-		} else {
-			console.log({key, active: false});
-			buttons[key].disabled = true;
-			buttons[key].classList.remove('active');
-		}
+		const fn = active[key]() ? 'add' : 'remove';
+		buttons[key].classList[fn]('active');
 	}
 }
 
-buttons.clear.addEventListener('click', () => {
-	draw.deleteAll();
-	reRender()
-});
+buttons.clear.addEventListener('click', clearMap);
+buttons.draw.addEventListener('click', switchToDraw);
+buttons.pan.addEventListener('click', switchToPan);
+buttons.move.addEventListener('click', reRender);
+map.on('load', reRender);
 
-buttons.draw.addEventListener('click', () => {
-	draw.changeMode('rectangle');
-	reRender()
-});
-
-buttons.pan.addEventListener('click', () => {
-	draw.changeMode('simple_select');
-	reRender()
-});
-
-buttons.move.addEventListener('click', () => {
-	true;
-	reRender()
-});
-
-map.on('load', () => {
-	reRender();
-});
 </script>
 </body>
 </html>
