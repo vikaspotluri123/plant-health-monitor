@@ -1,3 +1,5 @@
+process.env.GOOGLE_API_KEY = 'AIzaSyBmInMi5WJ4dlfbXBxBnHaoXqF0y7NdGdE';
+
 const {BrowserWindow, app, Tray, Menu, ipcMain} = require('electron');
 const path = require('path');
 const backend = require('./wrapper');

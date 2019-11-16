@@ -12,7 +12,7 @@ export default class AnalysisConnector extends Base {
   processResult(result: string): string {
     return result;
   }
-  
+
   async exec(inputDir: PathLike): Promise<PathLike> {
     console.log('Processing image in', inputDir);
     await delay(1000);

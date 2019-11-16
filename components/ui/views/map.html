@@ -329,7 +329,8 @@ const buttons = {
 	clear: document.getElementById('delete'),
 	draw: document.getElementById('draw'),
 	pan: document.getElementById('pan'),
-	move: document.getElementById('move')
+	move: document.getElementById('move'),
+	locate: document.getElementById('locate')
 };
 
 const active = {
@@ -355,6 +356,10 @@ const clickable = {
 
 	pan() {
 		return draw.getMode() !== 'simple_select';
+	},
+
+	locate() {
+		return true;
 	}
 }
 
@@ -398,6 +403,7 @@ buttons.clear.addEventListener('click', clearMap);
 buttons.draw.addEventListener('click', switchToDraw);
 buttons.pan.addEventListener('click', switchToPan);
 buttons.move.addEventListener('click', reRender);
+buttons.locate.addEventListener('click', () => geoLocate.trigger())
 map.on('load', reRender);
 
 </script>
