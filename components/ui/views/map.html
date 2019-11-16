@@ -12,18 +12,52 @@
 	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
 	<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
 	<style>
-    body {margin:0; padding:0;}
-    #map {position:absolute; top:0; bottom:0; width:100%;}
-    .calculation-box {
-        height: 75px;
-        width: 150px;
-        position: absolute;
-        bottom: 40px;
-        right: 10px;
-        background-color: rgba(255, 255, 255, .9);
-        padding: 15px;
-        text-align: center;
-    }
+    body {
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+		}
+
+		#map {
+			height: 90vh;
+		}
+
+		.controls {
+			margin: 0 auto;
+			padding: 2.5vh 0;
+		}
+
+		.btn {
+			width: fit-content;
+			margin: 0 auto;
+			margin-top: 0.5rem;
+			color: white;
+			background: maroon;
+			border: none;
+			padding: 0.5rem 1rem;
+			box-shadow: 
+				0 20px 25px -5px rgba(0, 0, 0, 0.1),
+				0 10px 10px -5px rgba(0, 0, 0, 0.04);
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background 0.1s ease-in;
+		}
+
+		.btn:focus,
+		.btn:hover {
+			outline: none;
+			background: darkmagenta;
+		}
+
+		.btn[disabled] {
+			cursor: not-allowed;
+			background: lightblue;
+		}
+
+		.mapboxgl-ctrl {
+			display: none;
+		}
 	</style>
 	<script>
 		window.mapStyles = [{
@@ -115,17 +149,23 @@
 <body>
 
 <div id='map'></div>
-<div class='calculation-box'>
-    <div id='calculated-area'></div>
+<div class="controls">
+	<button class="btn" id="delete">Clear Map</button>
+	<button class="btn" disabled id="draw">Draw Mode</button>
+	<button class="btn" disabled id="pan">Pan Mode</button>
+	<button class="btn" disabled id="move">Move plot</button>
+	<div class='calculation-box'>
+			<div id='calculated-area'></div>
+	</div>
 </div>
 
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiMjAxOS0xNy10YW11LWVjZW4tY2Fwc3RvbmUiLCJhIjoiY2syYXI3cnZrMWU2NzNjbnBycDZqanVoMyJ9.teXKI51LkDHSgKLwTeryfA';
 const map = new mapboxgl.Map({
 	container: 'map',
-	style: 'mapbox://styles/mapbox/satellite-v8', //hosted style id
+	style: 'mapbox://styles/mapbox/satellite-v8',
 	center: [30.555539999999997, -96.40986].reverse(), // starting position
-	zoom: 14 // starting zoom
+	zoom: 14
 });
 
 const modes = MapboxDraw.modes;
@@ -134,21 +174,24 @@ let draw = new MapboxDraw({
 	displayControlsDefault: false,
 	modes,
 	controls: {
-		polygon: true,
-		rectangle: true,
-		trash: true
+		polygon: false,
+		rectangle: false,
+		trash: false,
+		geolocate: false
 	},
-	userProperties: true,
+	userProperties: false,
 	styles: window.mapStyles
 });
-map.addControl(draw);
-map.addControl(new mapboxgl.ScaleControl());
-map.addControl(new mapboxgl.GeolocateControl({
+const g = new mapboxgl.GeolocateControl({
 	positionOptions: {
 		enableHighAccuracy: true
 	},
 	trackUserLocation: true
-}));
+});
+
+map.addControl(draw);
+map.addControl(new mapboxgl.ScaleControl());
+map.addControl(g);
 
 map.on('draw.create', updateArea);
 // map.on('draw.delete', updateArea);
@@ -217,26 +260,20 @@ const features = points.map((point, idx) => {
 		}
 	};
 });
+const buttons = {
+	clear: document.getElementById('delete'),
+	draw: document.getElementById('draw'),
+	pan: document.getElementById('pan'),
+	move: document.getElementById('move')
+};
 
-map.on('load', () => {
-	map.addLayer({
-		"id": "points",
-		"type": "symbol",
-		"source": {
-				"type": "geojson",
-				"data": {
-						"type": "FeatureCollection",
-						features
-				}
-		},
-		"layout": {
-				"icon-image": "{icon}-15",
-				"text-field": "{title}",
-				"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-				"text-offset": [0, 0.6],
-				"text-anchor": "top"
-		}
-	});
+buttons.clear.addEventListener('click', () => {
+	console.log('???');
+	if (this.disabled) {
+		console.log('???');
+	}
+
+	g.trigger();
 });
 </script>
 

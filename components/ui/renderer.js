@@ -41,7 +41,8 @@ function showWindow() {
     width: 1024,
     height: 800,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webviewTag: true
     }
   });
 

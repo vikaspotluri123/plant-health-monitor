@@ -111,3 +111,11 @@ section {
 .mt-1 {
   margin-top: 1rem;
 }
+
+.hidden {
+  display: none;
+}
+
+#map {
+  border: 1px solid dodgerblue;
+}

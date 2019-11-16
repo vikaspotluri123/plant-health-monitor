@@ -11,10 +11,10 @@
   <main>
     <h1 class="center">Plant Health Monitor v0</h1>
     <section id="start">
-      <iframe src="../map.html" style="height: 84vh"></iframe>
+      <webview id="map" src="map.html" style="height: 84vh"></webview>
       <button class="btn">Launch</button>
     </section>
-    <section id="process" class="centered">
+    <section id="process" class="centered hidden">
       <p>Insert SD card into computer, and then select drive letter</p>
       <select name="sd-drive-letter" class="mx-auto">
         <option value="d">D:</option>
@@ -24,7 +24,7 @@
       </select>
       <button class="btn mt-1">Process Run</button>
     </section>
-    <section id="results">
+    <section id="results" class="hidden">
       <img id="stitched" />
       <img id="marked" />
     </section>
@@ -39,6 +39,7 @@
     document.querySelector('#start').innerHTML = "You are not online. Interactive map selection will not work.";
     throw new Error('ENOTONLINE');
   }
+
 
   // Set up inter-process-communication between the backend and the renderer
   require('./components/ipc').init();
