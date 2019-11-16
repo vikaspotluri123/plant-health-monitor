@@ -17,6 +17,7 @@
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 		}
 
 		#map {
@@ -154,10 +155,70 @@
 	<button class="btn" disabled id="draw">Draw Mode</button>
 	<button class="btn" disabled id="pan">Pan Mode</button>
 	<button class="btn" disabled id="move">Move plot</button>
-	<div class='calculation-box'>
-			<div id='calculated-area'></div>
-	</div>
+	<p>Area of selected region (m<sup>2</sup>): <span id="calculated-area">N/A</span></p>
 </div>
+
+<script>
+	function renderPoints() {
+		const points = [
+			[30.55558, -96.40986],
+			[30.555693333333334, -96.40949666666666],
+			[30.55580666666667, -96.40913333333332],
+			[30.555475238095244, -96.40899619047619],
+			[30.555361904761906, -96.40935952380953],
+			[30.55524857142857, -96.40972285714287],
+			[30.554917142857143, -96.40958571428573],
+			[30.55503047619048, -96.40922238095239],
+			[30.555143809523816, -96.40885904761905],
+			[30.554812380952388, -96.4087219047619],
+			[30.554699047619053, -96.40908523809524],
+			[30.554585714285714, -96.40944857142858],
+			[30.55425428571429, -96.40931142857144],
+			[30.554367619047625, -96.4089480952381],
+			[30.55448095238096, -96.40858476190476],
+			[30.55414952380953, -96.40844761904764],
+			[30.554036190476197, -96.40881095238097],
+			[30.55392285714286, -96.40917428571431],
+			[30.553591428571433, -96.40903714285717],
+			[30.55370476190477, -96.40867380952383],
+			[30.553818095238103, -96.4083104761905]
+		];
+
+		const features = points.map((point, idx) => {
+			return {
+				"type": "Feature",
+				"properties": {
+						"title": idx
+				},
+				"geometry": {
+						"coordinates": point.reverse(),
+						"type": "Point"
+				}
+			};
+		});
+
+		map.on('load', () => {
+			map.addLayer({
+				"id": "points",
+				"type": "symbol",
+				"source": {
+					"type": "geojson",
+					"data": {
+						"type": "FeatureCollection",
+						features
+					}
+				},
+				"layout": {
+					"icon-image": "{icon}-15",
+					"text-field": "{title}",
+					"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+					"text-offset": [0, 0.6],
+					"text-anchor": "top"
+				}
+			});
+		});
+	}
+</script>
 
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiMjAxOS0xNy10YW11LWVjZW4tY2Fwc3RvbmUiLCJhIjoiY2syYXI3cnZrMWU2NzNjbnBycDZqanVoMyJ9.teXKI51LkDHSgKLwTeryfA';
@@ -196,24 +257,21 @@ map.addControl(g);
 map.on('draw.create', updateArea);
 // map.on('draw.delete', updateArea);
 map.on('draw.update', updateArea);
-draw.changeMode('rectangle');
 map.on('draw.modechange', (e) => {
 	if (e.mode === 'draw_polygon') {
 		draw.changeMode('rectangle');
 	}
 });
 
+const areaNode = document.getElementById('calculated-area');
 function updateArea(e) {
 	const MAX_AREA = 75000;
-	let data = draw.getAll();
-	let answer = document.getElementById('calculated-area');
+	const data = draw.getAll();
 	if (data.features.length > 0) {
-		let area = turf.area(data);
-		let rounded_area = Math.round(area*100)/100;
-
-		answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
+		const area = Math.round(turf.area(data) * 100) / 100;
+		areaNode.textContent = area;
 		let message;
-		if (rounded_area > MAX_AREA) {
+		if (area > MAX_AREA) {
 			message = 'The area you selected is too large. Try again.';
 		} else {
 			const points = [...data.features[0].geometry.coordinates[0]];
@@ -222,44 +280,17 @@ function updateArea(e) {
 		}
 		console.log(message);
 
-		setTimeout(() => window.alert(message), 0);
+		setTimeout(() => {
+			draw.changeMode('simple_select');
+			window.alert(message)
+			reRender();
+		}, 0);
 	}
+
 }
 
-const points = [[30.55558, -96.40986],
-[30.555693333333334, -96.40949666666666],
-[30.55580666666667, -96.40913333333332],
-[30.555475238095244, -96.40899619047619],
-[30.555361904761906, -96.40935952380953],
-[30.55524857142857, -96.40972285714287],
-[30.554917142857143, -96.40958571428573],
-[30.55503047619048, -96.40922238095239],
-[30.555143809523816, -96.40885904761905],
-[30.554812380952388, -96.4087219047619],
-[30.554699047619053, -96.40908523809524],
-[30.554585714285714, -96.40944857142858],
-[30.55425428571429, -96.40931142857144],
-[30.554367619047625, -96.4089480952381],
-[30.55448095238096, -96.40858476190476],
-[30.55414952380953, -96.40844761904764],
-[30.554036190476197, -96.40881095238097],
-[30.55392285714286, -96.40917428571431],
-[30.553591428571433, -96.40903714285717],
-[30.55370476190477, -96.40867380952383],
-[30.553818095238103, -96.4083104761905]];
+renderPoints();
 
-const features = points.map((point, idx) => {
-	return {
-		"type": "Feature",
-		"properties": {
-				"title": idx
-		},
-		"geometry": {
-				"coordinates": point.reverse(),
-				"type": "Point"
-		}
-	};
-});
 const buttons = {
 	clear: document.getElementById('delete'),
 	draw: document.getElementById('draw'),
@@ -267,15 +298,60 @@ const buttons = {
 	move: document.getElementById('move')
 };
 
-buttons.clear.addEventListener('click', () => {
-	console.log('???');
-	if (this.disabled) {
-		console.log('???');
-	}
+const active = {
+	clear() {
+		const all = draw.getAll().features;
+		return all.length >= 1 && all[0].geometry.coordinates[0].length === 5;
+	},
 
-	g.trigger();
+	// Draw SHOULD be active when clear is NOT, OR if we're not currently drawing a rectangle
+	draw() {
+		return !active.clear() || draw.getMode() !== 'rectangle';
+	},
+
+	pan() {
+		return draw.getMode !== 'simple_select';
+	}
+}
+
+function reRender() {
+	console.log('Rerendering...');
+	for (const key in active) {
+		if (active[key]()) {
+			console.log({key, active: true});
+			buttons[key].classList.add('active');
+			buttons[key].disabled = false;
+		} else {
+			console.log({key, active: false});
+			buttons[key].disabled = true;
+			buttons[key].classList.remove('active');
+		}
+	}
+}
+
+buttons.clear.addEventListener('click', () => {
+	draw.deleteAll();
+	reRender()
+});
+
+buttons.draw.addEventListener('click', () => {
+	draw.changeMode('rectangle');
+	reRender()
+});
+
+buttons.pan.addEventListener('click', () => {
+	draw.changeMode('simple_select');
+	reRender()
+});
+
+buttons.move.addEventListener('click', () => {
+	true;
+	reRender()
+});
+
+map.on('load', () => {
+	reRender();
 });
 </script>
-
 </body>
 </html>
