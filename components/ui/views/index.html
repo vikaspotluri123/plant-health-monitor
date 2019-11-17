@@ -40,7 +40,6 @@
     throw new Error('ENOTONLINE');
   }
 
-
   // Set up inter-process-communication between the backend and the renderer
   require('./components/ipc').init();
   const states = require('./components/states');

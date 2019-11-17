@@ -316,12 +316,10 @@ function updateArea(e) {
 	setTimeout(() => {
 		if (isBad) {
 			clearMap();
+			window.alert(message)
 		} else {
 			switchToPan();
 		}
-
-		console.log(message);
-		window.alert(message)
 	}, 0);
 }
 
