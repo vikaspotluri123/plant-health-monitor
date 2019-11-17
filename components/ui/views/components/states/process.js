@@ -5,13 +5,13 @@ module.exports = class ProcessingState extends State {
     get parentNode() {
         return '#process';
     }
-    
+
     set busy(value) {
 		this.btn.disabled = value;
 		this.drive.disabled = value;
 		this._busy = value;
 	}
-    
+
 	init() {
 		this.btn = this._parentNode.querySelector('.btn');
 		this.drive = this._parentNode.querySelector('select');

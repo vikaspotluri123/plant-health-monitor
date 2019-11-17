@@ -25,8 +25,14 @@
       <button class="btn mt-1">Process Run</button>
     </section>
     <section id="results" class="hidden">
-      <img id="stitched" />
-      <img id="marked" />
+      <!-- From CSS Secrets -->
+      <div class="comparison-wrapper">
+        <div id="top-image">
+          <img id="marked" />
+        </div>
+        <img id="stitched" />
+        <input id="comparison-selector" type="range" />
+      </div>
     </section>
   </main>
   <footer id="status">
@@ -43,6 +49,6 @@
   // Set up inter-process-communication between the backend and the renderer
   require('./components/ipc').init();
   const states = require('./components/states');
-  states[0].activate();
+  states[0]].activate();
 </script>
 </html>

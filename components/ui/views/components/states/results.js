@@ -10,6 +10,10 @@ module.exports = class ProcessingState extends State {
         this.initialized = true;
         this._stitchedNode = this._parentNode.querySelector('#stitched');
         this._highlightNode = this._parentNode.querySelector('#marked');
+        this._wrapper = this._parentNode.querySelector('#top-image');
+        this._slider = this._parentNode.querySelector('#comparison-selector');
+        this._slider.oninput = () => this._wrapper.style.width = `${this._slider.value}%`;
+
         this.rerender();
     }
 
@@ -17,12 +21,12 @@ module.exports = class ProcessingState extends State {
         this._stitchedImage = image;
         this.rerender();
     }
-    
+
     set highlightImage(image) {
         this._highlightImage = image;
         this.rerender();
     }
-    
+
     rerender() {
         if (!this.initialized) {
             return;
@@ -31,17 +35,9 @@ module.exports = class ProcessingState extends State {
         if (this._stitchedImage) {
             this._stitchedNode.setAttribute('src', this._stitchedImage);
         }
-        
+
         if (this._highlightImage) {
             this._highlightNode.setAttribute('src', this._highlightImage);
         }
     }
-
-	onSubmit(event) {
-		event.preventDefault();
-
-        this.busy = true;
-		this.btn.innerHTML = 'Processing data...';
-		ipc.sendMessage(['process-data', this.drive.value]);
-	}
 };

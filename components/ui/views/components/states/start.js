@@ -37,14 +37,14 @@ module.exports = class StartState extends State {
 			try {
 				await this._map.executeJavaScript('switchToDraw()');
 			} finally {
-				await dialog.showMessageBox(null, {message: 'Please select a valid region in the map', title: 'Invalid Region - DPHM 1.0', type: 'error'});
+				await dialog.showMessageBox(null, {message: 'Please select a valid region in the map', title: 'Invalid Region - DPHM v0', type: 'error'});
 			}
 
 			return;
 		}
 
 		if (!window.isConnected) {
-			await dialog.showMessageBox(null, {message: 'Not connected to drone', title: 'Connection Error - DPHM 1.0', type: 'error'});
+			await dialog.showMessageBox(null, {message: 'Not connected to drone', title: 'Connection Error - DPHM v0', type: 'error'});
 			ipc.setConnected(true);
 			return;
 		}

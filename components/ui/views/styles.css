@@ -119,3 +119,65 @@ section {
 h1 {
   margin: 0.5em 0;
 }
+
+/* Image comparison */
+/* Modified version of https://codepen.io/jsscclr/pen/QKbOBZ */
+
+.comparison-wrapper {
+  position: relative;
+}
+
+.comparison-wrapper > div {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+}
+
+.comparison-wrapper img {
+  display: block;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.comparison-wrapper input {
+  position: absolute;
+  margin: 0;
+  top: 0;
+  bottom: 10px;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+}
+/* 
+.comparison-wrapper input::before {
+  content: '';
+  height: 100%;
+  width: 5px;
+  background: white;
+} */
+
+input[type='range'],
+input[type='range']::-webkit-slider-runnable-track,
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 100%;
+  background: maroon;
+  padding: 1.5em 1.4em;
+  cursor: ew-resize;
+}
+
+#top-image {
+  border-right: 4px solid #E7489F;
+}
+
+#marked, #stitched {
+  max-width: 95vw;
+}
