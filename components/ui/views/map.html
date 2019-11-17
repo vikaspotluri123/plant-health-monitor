@@ -165,7 +165,7 @@
 				"line-join": "round"
 			},
 			"paint": {
-					// "line-color": "#c40b0b",
+				// "line-color": "#c40b0b",
 				"line-color": "#800000",
 				"line-width": 2
 			}
@@ -179,7 +179,7 @@
 	<div class="box">
 		<h2 class="center">Actions</h2>
 		<button class="btn" disabled id="delete">Clear Map</button>
-		<button class="btn" disabled id="move">Move plot</button>
+		<!-- <button class="btn" disabled id="move">Move plot</button> -->
 		<button class="btn" disabled id="locate">Center on Current Location</button>
 	</div>
 	<div class="box">
@@ -255,6 +255,7 @@
 </script>
 
 <script>
+window.points = null;
 mapboxgl.accessToken = 'pk.eyJ1IjoiMjAxOS0xNy10YW11LWVjZW4tY2Fwc3RvbmUiLCJhIjoiY2syYXI3cnZrMWU2NzNjbnBycDZqanVoMyJ9.teXKI51LkDHSgKLwTeryfA';
 const map = new mapboxgl.Map({
 	container: 'map',
@@ -309,6 +310,7 @@ function updateArea(e) {
 		const points = [...data.features[0].geometry.coordinates[0]];
 		points.pop();
 		message = points.map(([l, r]) => `${l.toFixed(5)}, ${r.toFixed(5)}`).join('\n');
+		window.points = points;
 	}
 
 	setTimeout(() => {
@@ -329,7 +331,7 @@ const buttons = {
 	clear: document.getElementById('delete'),
 	draw: document.getElementById('draw'),
 	pan: document.getElementById('pan'),
-	move: document.getElementById('move'),
+	// move: document.getElementById('move'),
 	locate: document.getElementById('locate')
 };
 
@@ -367,7 +369,8 @@ function clearMap() {
 	draw.deleteAll();
 	updateArea();
 	draw.changeMode('rectangle');
-	reRender()
+	window.points = null;
+	reRender();
 }
 
 function switchToPan() {
@@ -402,7 +405,7 @@ function reRender() {
 buttons.clear.addEventListener('click', clearMap);
 buttons.draw.addEventListener('click', switchToDraw);
 buttons.pan.addEventListener('click', switchToPan);
-buttons.move.addEventListener('click', reRender);
+// buttons.move.addEventListener('click', reRender);
 buttons.locate.addEventListener('click', () => geoLocate.trigger())
 map.on('load', reRender);
 
