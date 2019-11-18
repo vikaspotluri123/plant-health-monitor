@@ -4,13 +4,13 @@ os.environ['OPENCV_IO_MAX_IMAGE_PIXELS']=str(2**64)
 import cv2
 import numpy as np
 
-def loopstitch(path):
+def loopstitch(path, i):
     for indx, f in enumerate(os.listdir(path), start=0):
-        i = path[len(path) - 1]
+        j = path[len(path) - 1]
         if (len(os.listdir(path))-1>indx):
             img_left = os.path.join(path, os.listdir(path)[indx])
             img_right = os.path.join(path, os.listdir(path)[indx + 1])
-            comp = stitch(img_left, img_right)
+            comp = stitch(img_left, img_right, i)
             print("write to " + os.listdir(path)[indx + 1])
             ## command to save the composite
             cv2.imwrite(os.path.join(path, os.listdir(path)[indx + 1]), comp)
@@ -18,16 +18,16 @@ def loopstitch(path):
             print("loop complete")
 
     comp_rotate = rotate_img(comp, 90)
-    cv2.imwrite("output0/test"+ str(i) + ".jpg", comp_rotate)
+    cv2.imwrite("output0/test"+ str(j) + ".jpg", comp_rotate)
     print("comp_rotate written")
     return comp_rotate
 
-def stitch(init_left, init_right):
+def stitch(init_left, init_right, i):
     print("beginnging of stitch")
     ## read images using opencv library
     ## img_right/left used for disambiguity
-    img_left = cv2.imread(init_left, 0)
-    img_right = cv2.imread(init_right, 0)
+    img_left = cv2.imread(init_left)
+    img_right = cv2.imread(init_right)
 
     ## start sifting
     sift = cv2.xfeatures2d.SIFT_create()
@@ -40,19 +40,18 @@ def stitch(init_left, init_right):
     match = cv2.BFMatcher()
     matches = match.knnMatch(des_right, des_left, k=2)
     good = []
-    i = 0 ## check if using only every 100 matches helps with large pics
     for m, n in matches:
-        i = i+1
-        if m.distance < 0.2 * n.distance and i%100 == 1:  ## 0.2 may need to be increased ##
+        if m.distance < 0.5 *  n.distance: #and i%100 == 1:  ## 0.2 may need to be increased ##
             good.append(m)
-    # parameters of lines
-    # draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, flags=2)
 
-    ## draw matches
-    # img_matches = cv2.drawMatches(img_right, key_right, img_left, key_left, good, None, **draw_params)
-    # cv2.imwrite("test_composites/matches.jpg", img_matches)
-    # cv2.imshow("img_matches",img_matches)
-    # cv2.waitKey(0)
+    if  i==1:
+        # parameters of lines
+        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, flags=2)
+
+        ## draw matches
+        img_matches = cv2.drawMatches(img_right, key_right, img_left, key_left, good, None, **draw_params)
+        cv2.imshow("debug_matches",img_matches)
+        cv2.waitKey(0)
 
     ## find overlapping region using matches
     MIN_MATCH_COUNT = 10
@@ -67,7 +66,7 @@ def stitch(init_left, init_right):
         M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
         # give the left image the pixels from the right image (src -> dst)
-        h, w = img_right.shape ## add "c" in with h and w if color pics are used
+        h, w, c = img_right.shape ## add "c" in with h and w if color pics are used
         pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
         dst = cv2.perspectiveTransform(pts, M)
 
@@ -78,10 +77,13 @@ def stitch(init_left, init_right):
 
     dst = cv2.warpPerspective(img_right, M, (img_left.shape[1] + img_right.shape[1], img_left.shape[0]))
     dst[0:img_left.shape[0], 0:img_left.shape[1]] = img_left
+    stitched_img = trim(dst)
 
-    #return dst
+    if i == 1:
+        cv2.imshow("stitched_img", stitched_img)
+        cv2.waitKey(0)
     ## return the trimmed composite after stitching the inputs
-    return trim(dst)
+    return stitched_img
 
 # function to erase black regions (caused by residue of src image)
 def trim(frame):
@@ -149,35 +151,43 @@ def erase_black_lines(img):
     # Create a new image with 4 channels the forth channel Aplha will give the opacity for each pixel
     return cv2.merge((b_channel, g_channel, r_channel, mask))
 
-def main():
+def yes_or_no():
+    reply = str(input('would you like to use the debugging mode? (y/n): ')).lower().strip()
+    if reply[0] == 'y':
+        return True
+    if reply[0] == 'n':
+        return False
+    else:
+        return yes_or_no("Uhhhh... please enter ")
+
+def main(i):
     path0 = r"input0"
     path1 = r"input1"
-    path2 = r"input2"
-    path3 = r"input3"
+    # path2 = r"input2"
+    # path3 = r"input3"
     pathf = r"output0"
 
-    comp0 = loopstitch(path0)
+    comp0 = loopstitch(path0, i)
     comp0 = rotate_img(comp0,-90)
 
-    comp1 = loopstitch(path1)
+    comp1 = loopstitch(path1, i)
     comp1 = rotate_img(comp1,-90)
 
-    comp2 = loopstitch(path2)
-    comp2 = rotate_img(comp2, -90)
+    # comp2 = loopstitch(path2)
+    # comp2 = rotate_img(comp2, -90)
+    #
+    # comp3 = loopstitch(path3)
+    # comp3 = rotate_img(comp3, -90)
 
-    comp3 = loopstitch(path3)
-    comp3 = rotate_img(comp3, -90)
-
-    output_comp = loopstitch(pathf)
+    output_comp = loopstitch(pathf, i)
 
     final = finalize_img(output_comp)
 
-    finalfinal = erase_black_lines(final)
-
-    cv2.imwrite("output0/finalfinal.jpg", finalfinal)
+    cv2.imwrite("output0/final.jpg", final)
 
 if __name__ == "__main__":
-    main()
+    i = yes_or_no()
+    main(i)
 
     # img_1 = cv2.imread("test_images/row-1-col-1", 0)
     # img_2 = cv2.imread("test_images/row-1-col-2", 0)
