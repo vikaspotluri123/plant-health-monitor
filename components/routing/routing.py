@@ -8,20 +8,25 @@ GRID_UNIT = 40
 # configuration for overage margin on edge of path
 MARGIN = 20
 
+# hard code meter conversions for College Station TX
 METERS_IN_DEG_LAT = 111320
 METERS_IN_DEG_LON = 95789.6
 
+# get grid unit steps in terms of lat and lon
 LON_AXIS_STEP = GRID_UNIT / METERS_IN_DEG_LAT
 LAT_AXIS_STEP = GRID_UNIT / METERS_IN_DEG_LON
 
+# get overlap margins in terms of lat and lon
 LONG_MARGIN = MARGIN / METERS_IN_DEG_LAT
 LAT_MARGIN = MARGIN / METERS_IN_DEG_LON
 
+# make class to store coordinates 
 class Coordinate:
     def __init__(self, latitude, longitude):
         self.latitude = latitude
         self.longitude = longitude
     
+    # this allows coordinates to be printed
     def __str__(self):
         return str(self.latitude) + ', ' + str(self.longitude)
 
@@ -80,23 +85,26 @@ class Navigation:
         return path
 
     
-    
+# get 4 comma-separated coordinates from input
 userC1 = sys.argv[1].split(',')
 userC2 = sys.argv[2].split(',')
 userC3 = sys.argv[3].split(',')
 userC4 = sys.argv[4].split(',')
 
+# create coordinate objects
 c2 = Coordinate(float(userC2[0]), float(userC2[1]))
 c1 = Coordinate(float(userC1[0]), float(userC1[1]))
 c3 = Coordinate(float(userC3[0]), float(userC3[1]))
 c4 = Coordinate(float(userC4[0]), float(userC4[1]))
 
 nav = Navigation()
+# create path
 path = nav.createPath(c1,c2,c3,c4)
 
 x = []
 y = []
 
+# print all coordinates
 for point in path:
     x.append(point.latitude)
     y.append(point.longitude)
