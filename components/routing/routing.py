@@ -30,7 +30,12 @@ class Coordinate:
     def __str__(self):
         return str(self.latitude) + ', ' + str(self.longitude)
 
+# check if validation passes
+def validateDistance(h, v):
+    return abs((h**2 + v**2)**(0.5) - GRID_UNIT) < GRID_UNIT*0.05
+
 class Navigation:
+
     def createPath(self, c1, c2, c3, c4):
         # calculate side1 latitude, longitude, and distance in meters
         side1lat = (c2.latitude - c1.latitude) * METERS_IN_DEG_LAT
@@ -66,6 +71,9 @@ class Navigation:
             for _in in range(0,nums1):
                 # add points to inner path for a single line
                 tempPath.append(Coordinate(mover.latitude / METERS_IN_DEG_LAT, mover.longitude / METERS_IN_DEG_LON))
+
+                if not validateDistance(hsteps1, vsteps1):
+                    print("ERROR")
 
                 # fix order if we are on a reverse row
                 if reverse:
