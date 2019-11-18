@@ -1,13 +1,16 @@
 import Base from './base';
 
 export default class RoutingConnector extends Base {
-  command = '1600';
+  implemented = true;
 
-  prepareArguments(): [] {
-    return [];
+  command = 'python';
+
+  prepareArguments(...args: any[]): any[] {
+    return ['../routing/routing.py', ...args];
   }
 
   processResult(result: string): string {
+    console.log('Got result', result);
     return result;
   }
 }

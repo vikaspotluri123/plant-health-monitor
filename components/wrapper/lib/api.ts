@@ -40,3 +40,8 @@ export async function processImages(letter: string) {
 export function isConnected() {
   return instance.isConnected;
 }
+
+if (!module.parent) {
+  connectors.routing.exec('96.40788589416512,30.55456066156509', '-96.40702758728003,30.55456066156509', '-96.40702758728003,30.553969358102023', '-96.4078858941651,30.553969358102023')
+    .then(c => console.log(c));
+}
