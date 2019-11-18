@@ -1,5 +1,4 @@
 from numpy import arange
-import matplotlib.pyplot as plt
 import copy
 import sys
 
@@ -91,6 +90,8 @@ c1 = Coordinate(userC1[0], userC1[1])
 c2 = Coordinate(userC2[0], userC2[1])
 c3 = Coordinate(userC3[0], userC3[1])
 c4 = Coordinate(userC4[0], userC4[1])
+
+print(c1)
 
 nav = Navigation()
 path = nav.createPath(c1,c2,c3,c4)
