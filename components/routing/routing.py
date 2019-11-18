@@ -101,12 +101,6 @@ nav = Navigation()
 # create path
 path = nav.createPath(c1,c2,c3,c4)
 
-x = []
-y = []
-
 # print all coordinates
 for point in path:
-    x.append(point.latitude)
-    y.append(point.longitude)
-
     print(point)
