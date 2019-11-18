@@ -218,6 +218,7 @@
 	];
 
 	let renderPointsRnd = 0;
+	let renderPointsidx = 0;
 
 	function renderPoints(points = DEFAULT_POINTS) {
 		const features = points.map((point, idx) => {
@@ -377,9 +378,8 @@ function clearMap() {
 	updateArea();
 
 	// Remove point layers
-	let index = 0;
-	while (index <= renderPointsRnd) {
-		const layerName = `points${index++}`;
+	while (renderPointsidx <= renderPointsRnd) {
+		const layerName = `points${renderPointsidx++}`;
 		const hasLayer = map.getLayer(layerName);
 		hasLayer && map.removeLayer(layerName);
 	}
