@@ -91,8 +91,6 @@ c1 = Coordinate(float(userC1[0]), float(userC1[1]))
 c3 = Coordinate(float(userC3[0]), float(userC3[1]))
 c4 = Coordinate(float(userC4[0]), float(userC4[1]))
 
-print(c1)
-
 nav = Navigation()
 path = nav.createPath(c1,c2,c3,c4)
 
