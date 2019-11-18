@@ -38,7 +38,6 @@ class Navigation:
         side2dist = (side2lat**2 + side2lon**2)**(0.5)
 
         path = []
-        reverseLong = False
 
         nums1 = len(arange(0, side1dist, GRID_UNIT))
         hsteps1 = side1lat / nums1
@@ -47,10 +46,7 @@ class Navigation:
         nums2 = len(arange(0, side2dist, GRID_UNIT))
         hsteps2 = side2lat / nums2
         vsteps2 = side2lon / nums2
-
-        #print(nums1, nums2)
-
-        #path.append(Coordinate(mover.latitude / METERS_IN_DEG_LAT, mover.longitude / METERS_IN_DEG_LON))
+        
         reverse = False
 
         for _out in range(0,nums2):
@@ -58,8 +54,6 @@ class Navigation:
 
 
             for _in in range(0,nums1):
-                #print(ignoreme, ignoreme2)
-
                 tempPath.append(Coordinate(mover.latitude / METERS_IN_DEG_LAT, mover.longitude / METERS_IN_DEG_LON))
 
                 if reverse:
@@ -67,13 +61,7 @@ class Navigation:
                     mover.longitude -= vsteps1
                 else:
                     mover.latitude += hsteps1
-                    mover.longitude += vsteps1
-            
-            
-
-            #for ob in tempPath:
-                #print(ob)
-            
+                    mover.longitude += vsteps1            
 
             if(~reverse):
                 mover.latitude -= hsteps1
@@ -89,23 +77,6 @@ class Navigation:
 
             reverse = ~reverse
 
-
-
-
-
-
-        """for (x, y) in (arange(c1 + side1lat-LAT_MARGIN, c1.latitude+LAT_MARGIN, LAT_AXIS_STEP)):
-            tempPath = []
-            for lon in arange(c1.longitude-LONG_MARGIN, c2.longitude+LONG_MARGIN, LON_AXIS_STEP):
-                temppath.append(Coordinate(lat, lon))
-            
-            else:
-                for lon in arange(c2.longitude+LONG_MARGIN, c1.longitude-LONG_MARGIN, -LON_AXIS_STEP):
-                    path.append(Coordinate(lat, lon))
-            reverseLong = not reverseLong
-        """
-
-
         return path
 
 
@@ -119,9 +90,6 @@ c4 = Coordinate(30.55326, -96.40890)
 nav = Navigation()
 path = nav.createPath(c1,c2,c3,c4)
 
-#for point in path:
-    #print(point)
-
 x = []
 y = []
 
@@ -130,6 +98,3 @@ for point in path:
     y.append(point.longitude)
 
     print(point)
-
-#plt.scatter(x,y)
-#plt.show()
