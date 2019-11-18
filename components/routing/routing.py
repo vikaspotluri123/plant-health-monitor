@@ -1,6 +1,7 @@
 from numpy import arange
 import matplotlib.pyplot as plt
 import copy
+import sys
 
 # configuration for distance between pictures in meters
 GRID_UNIT = 40
@@ -23,7 +24,7 @@ class Coordinate:
         self.longitude = longitude
     
     def __str__(self):
-        return "[" + str(self.latitude) + ', ' + str(self.longitude) + '],'
+        return str(self.latitude) + ', ' + str(self.longitude)
 
 class Navigation:
     def createPath(self, c1, c2, c3, c4):
@@ -79,13 +80,18 @@ class Navigation:
 
         return path
 
+    
+    
+userC1 = sys.argv[0].split(',')
+userC2 = sys.argv[1].split(',')
+userC3 = sys.argv[2].split(',')
+userC4 = sys.argv[3].split(',')
 
 
-c1 = Coordinate(30.55558, -96.40986)
-c2 = Coordinate(30.55592, -96.40877)
-c3 = Coordinate(30.55360, -96.40781)
-c4 = Coordinate(30.55326, -96.40890)
-
+c1 = Coordinate(userC1[0], userC1[1])
+c2 = Coordinate(userC2[0], userC2[1])
+c3 = Coordinate(userC3[0], userC3[1])
+c4 = Coordinate(userC4[0], userC4[1])
 
 nav = Navigation()
 path = nav.createPath(c1,c2,c3,c4)
