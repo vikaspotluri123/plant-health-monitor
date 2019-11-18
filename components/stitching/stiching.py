@@ -3,8 +3,12 @@ import sys
 os.environ['OPENCV_IO_MAX_IMAGE_PIXELS']=str(2**64)
 import cv2
 import numpy as np
+import time
 
 def loopstitch(path, i):
+    if i == 1:
+        start = time.time()
+
     for indx, f in enumerate(os.listdir(path), start=0):
         j = path[len(path) - 1]
         if (len(os.listdir(path))-1>indx):
@@ -17,6 +21,10 @@ def loopstitch(path, i):
         else:
             print("loop complete")
 
+    if i == 1:
+        end = time.time()
+        print(end-start)
+        
     comp_rotate = rotate_img(comp, 90)
     cv2.imwrite("output0/test"+ str(j) + ".jpg", comp_rotate)
     print("comp_rotate written")
@@ -188,15 +196,3 @@ def main(i):
 if __name__ == "__main__":
     i = yes_or_no()
     main(i)
-
-    # img_1 = cv2.imread("test_images/row-1-col-1", 0)
-    # img_2 = cv2.imread("test_images/row-1-col-2", 0)
-    # img_3 = cv2.imread("test_images/row-1-col-3", 0)
-    # img_4 = cv2.imread("test_images/row-1-col-4", 0)
-    #
-    # cv2.imwrite("test_composites/graypic1.jpg", img_1)
-    # cv2.imwrite("test_composites/graypic2.jpg", img_2)
-    # cv2.imwrite("test_composites/graypic3.jpg", img_3)
-    # cv2.imwrite("test_composites/graypic4.jpg", img_4)
-
-
