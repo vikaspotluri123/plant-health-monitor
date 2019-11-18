@@ -86,10 +86,10 @@ userC2 = sys.argv[2].split(',')
 userC3 = sys.argv[3].split(',')
 userC4 = sys.argv[4].split(',')
 
-c1 = Coordinate(userC1[0], userC1[1])
-c2 = Coordinate(userC2[0], userC2[1])
-c3 = Coordinate(userC3[0], userC3[1])
-c4 = Coordinate(userC4[0], userC4[1])
+c2 = Coordinate(float(userC2[0]), float(userC2[1]))
+c1 = Coordinate(float(userC1[0]), float(userC1[1]))
+c3 = Coordinate(float(userC3[0]), float(userC3[1]))
+c4 = Coordinate(float(userC4[0]), float(userC4[1]))
 
 print(c1)
 
