@@ -82,11 +82,10 @@ class Navigation:
 
     
     
-userC1 = sys.argv[0].split(',')
-userC2 = sys.argv[1].split(',')
-userC3 = sys.argv[2].split(',')
-userC4 = sys.argv[3].split(',')
-
+userC1 = sys.argv[1].split(',')
+userC2 = sys.argv[2].split(',')
+userC3 = sys.argv[3].split(',')
+userC4 = sys.argv[4].split(',')
 
 c1 = Coordinate(userC1[0], userC1[1])
 c2 = Coordinate(userC2[0], userC2[1])
