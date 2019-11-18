@@ -21,6 +21,7 @@ export default abstract class BaseComponentConnector {
       return this.processResult(stdout);
     }
 
+    console.log('Not implemented, delaying', this.command);
     await delay(Number(this.command));
   }
 }

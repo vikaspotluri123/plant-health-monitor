@@ -21,7 +21,7 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   await determineWaypoints(a, b, c, d);
   emitMessage('routingCompleted');
   // Step 2: upload waypoints to drone
-  await connectors.routing.exec('upload');
+  await connectors.analysis.exec('upload');
   emitMessage('routesUploaded');
   // Step 3: fly baby fly!
   // This will probably be tied to the WiFi library (we're waiting to be reconnected via WiFi)
@@ -43,9 +43,4 @@ export async function processImages(letter: string) {
 
 export function isConnected() {
   return instance.isConnected;
-}
-
-if (!module.parent) {
-  connectors.routing.exec('-96.40788589416512,30.55456066156509', '-96.40702758728003,30.55456066156509', '-96.40702758728003,30.553969358102023', '-96.4078858941651,30.553969358102023')
-    .then(c => console.log(c));
 }

@@ -71,6 +71,10 @@ module.exports = class StartState extends State {
 
 		const points = await this.getPoints();
 
+		if (!points) {
+			return;
+		}
+
 		if (!window.isConnected) {
 			await dialog.showMessageBox(null, {message: 'Not connected to drone', title: 'Connection Error - DPHM v0', type: 'error'});
 			ipc.setConnected(true);
