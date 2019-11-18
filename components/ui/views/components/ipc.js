@@ -57,6 +57,8 @@ class IPCManager {
 				states[2].highlightImage = data;
 				states[2].activate();
 				break;
+			case 'generatedPoints':
+				states[0].plot(data);
 			default:
 				if (name in ACTION_MESSAGES) {
 					this.setAction(ACTION_MESSAGES[name]);

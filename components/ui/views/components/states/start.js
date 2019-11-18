@@ -14,7 +14,7 @@ module.exports = class StartState extends State {
 	}
 
 	set busy(value) {
-		this.btn.disabled = value;
+		this.launchBtn.disabled = value;
 		this._busy = value;
 	}
 
@@ -24,13 +24,13 @@ module.exports = class StartState extends State {
 	}
 
 	init() {
-		this.btn = document.querySelector('#start .btn');
-		this.on(this.btn, 'click', this.onSubmit.bind(this));
+		this.plotBtn = document.querySelector('#start .plot');
+		this.launchBtn = document.querySelector('#start .launch');
+		this.on(this.launchBtn, 'click', this.onSubmit.bind(this));
+		this.on(this.plotBtn, 'click', this.requestPlot.bind(this));
 	}
 
-	async onSubmit(event) {
-		event.preventDefault();
-
+	async getPoints() {
 		const points = await this._map.executeJavaScript('points');
 
 		if (!points || points.length !== 4) {
@@ -42,6 +42,34 @@ module.exports = class StartState extends State {
 
 			return;
 		}
+
+		return points;
+	}
+
+	async requestPlot(event) {
+		event.preventDefault();
+		this.plotBtn.disabled = true;
+
+		const points = await this.getPoints();
+
+		if (!Array.isArray(points)) {
+			this.plotBtn.disabled = false;
+			return;
+		}
+
+		ipc.sendMessage(['plot', points]);
+	}
+
+	async plot(data) {
+		const dta = JSON.stringify(data);
+		await this._map.executeJavaScript(`renderPoints(${dta})`);
+		this.plotBtn.disabled = false;
+	}
+
+	async onSubmit(event) {
+		event.preventDefault();
+
+		const points = await this.getPoints();
 
 		if (!window.isConnected) {
 			await dialog.showMessageBox(null, {message: 'Not connected to drone', title: 'Connection Error - DPHM v0', type: 'error'});

@@ -9,8 +9,7 @@ export default class RoutingConnector extends Base {
     return ['../routing/routing.py', ...args];
   }
 
-  processResult(result: string): string {
-    console.log('Got result', result);
-    return result;
+  processResult(result: string): string[][] {
+    return result.split('\n').map(a => a.trim().split(',').reverse());
   }
 }

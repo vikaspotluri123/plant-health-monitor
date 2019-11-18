@@ -11,10 +11,14 @@ export function emitMessage(message: any, data: any = null) {
 instance.events.on('connection.lost', () => emitMessage('drone.disconnected'));
 instance.events.on('connection.restored', () => emitMessage('drone.connected'));
 
+export async function determineWaypoints(a: string, b: string, c: string, d: string) {
+  return await connectors.routing.exec(a, b, c, d);
+}
+
 export async function flyOver(a: string, b: string, c: string, d: string) {
   console.log('Starting flyover');
   // Step 1: determine waypoints
-  await connectors.routing.exec(a, b, c, d);
+  await determineWaypoints(a, b, c, d);
   emitMessage('routingCompleted');
   // Step 2: upload waypoints to drone
   await connectors.routing.exec('upload');

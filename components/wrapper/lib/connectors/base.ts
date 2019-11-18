@@ -15,11 +15,9 @@ export default abstract class BaseComponentConnector {
   async exec(...passthrough: any[]) {
     if (this.implemented) {
       const args = this.prepareArguments(...passthrough);
-      console.log('running');
 
       const {stdout} = await execa(this.command, args);
 
-      console.log('ran');
       return this.processResult(stdout);
     }
 

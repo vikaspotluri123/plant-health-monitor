@@ -217,28 +217,30 @@
 		[30.553818095238103, -96.4083104761905]
 	];
 
+	let rnd = 0;
+
 	function renderPoints(points = DEFAULT_POINTS) {
 		const features = points.map((point, idx) => {
 			return {
 				"type": "Feature",
 				"properties": {
-						"title": idx
+					"title": idx
 				},
 				"geometry": {
-						"coordinates": point.reverse(),
-						"type": "Point"
+					"coordinates": point.reverse(),
+					"type": "Point"
 				}
 			};
 		});
 
-		map.on('load', () => {
+		const addLayer = () => {
 			map.addLayer({
-				"id": "points",
-				"type": "symbol",
-				"source": {
-					"type": "geojson",
-					"data": {
-						"type": "FeatureCollection",
+				id: `points${++rnd}`,
+				type: "symbol",
+				source: {
+					type: 'geojson',
+					data: {
+						type: 'FeatureCollection',
 						features
 					}
 				},
@@ -250,7 +252,14 @@
 					"text-anchor": "top"
 				}
 			});
-		});
+		};
+
+		if (map.loaded()) {
+			addLayer();
+		} else {
+			map.on('load', addLayer);
+		}
+
 	}
 </script>
 
@@ -323,7 +332,7 @@ function updateArea(e) {
 	}, 0);
 }
 
-renderPoints();
+// renderPoints();
 
 const buttons = {
 	clear: document.getElementById('delete'),
