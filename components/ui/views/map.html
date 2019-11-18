@@ -217,7 +217,7 @@
 		[30.553818095238103, -96.4083104761905]
 	];
 
-	let rnd = 0;
+	let renderPointsRnd = 0;
 
 	function renderPoints(points = DEFAULT_POINTS) {
 		const features = points.map((point, idx) => {
@@ -227,7 +227,7 @@
 					"title": idx
 				},
 				"geometry": {
-					"coordinates": point.reverse(),
+					"coordinates": point,
 					"type": "Point"
 				}
 			};
@@ -235,7 +235,7 @@
 
 		const addLayer = () => {
 			map.addLayer({
-				id: `points${++rnd}`,
+				id: `points${++renderPointsRnd}`,
 				type: "symbol",
 				source: {
 					type: 'geojson',
@@ -375,6 +375,16 @@ const clickable = {
 function clearMap() {
 	draw.deleteAll();
 	updateArea();
+
+	// Remove point layers
+	let index = 0;
+	while (index <= renderPointsRnd) {
+		const layerName = `points${index++}`;
+		const hasLayer = map.getLayer(layerName);
+		hasLayer && map.removeLayer(layerName);
+	}
+	renderPointsRnd = 0;
+
 	draw.changeMode('rectangle');
 	window.points = null;
 	reRender();

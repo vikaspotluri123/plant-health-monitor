@@ -10,6 +10,6 @@ export default class RoutingConnector extends Base {
   }
 
   processResult(result: string): string[][] {
-    return result.split('\n').map(a => a.trim().split(',').reverse());
+    return result.split('\n').map(a => a.trim().split(','));
   }
 }
