@@ -142,26 +142,22 @@ def yes_or_no():
     else:
         return yes_or_no("Uhhhh... please enter ")
 
+def loopstitch_wrapper(path, i):
+    comp = loopstitch(path, i)
+    cv2.imshow("composite image", comp)
+    return comp
+
 def main(i):
+    # for now, write out paths
     path0 = r"input0"
     path1 = r"input1"
-    # path2 = r"input2"
-    # path3 = r"input3"
     pathf = r"output0"
 
-    comp0 = loopstitch(path0, i)
-    cv2.imshow("comp0", comp0)
+    comp0 = loopstitch_wrapper(path0, i)
 
-    comp1 = loopstitch(path1, i)
-    cv2.imshow("comp1", comp1)
+    comp1 = loopstitch_wrapper(path1, i)
 
-    # comp2 = loopstitch(path2)
-    # cv2.imshow("comp2", comp2)
-
-    # comp3 = loopstitch(path3)
-    # cv2.imshow("comp3", comp3)
-
-    output_comp = loopstitch(pathf, i)
+    output_comp = loopstitch_wrapper(pathf, i)
 
     final = finalize_img(output_comp)
 
