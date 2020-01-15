@@ -23,8 +23,8 @@ def loopstitch(path, i):
 
     if i == 1:
         end = time.time()
-        print(end-start)
-        
+        print("time takem: "+str(end-start)+"ms")
+
     comp_rotate = rotate_img(comp, 90)
     cv2.imwrite("output0/test"+ str(j) + ".jpg", comp_rotate)
     print("comp_rotate written")
@@ -49,7 +49,7 @@ def stitch(init_left, init_right, i):
     matches = match.knnMatch(des_right, des_left, k=2)
     good = []
     for m, n in matches:
-        if m.distance < 0.5 *  n.distance: #and i%100 == 1:  ## 0.2 may need to be increased ##
+        if m.distance < 0.5 *  n.distance:
             good.append(m)
 
     if  i==1:
@@ -62,7 +62,7 @@ def stitch(init_left, init_right, i):
         cv2.waitKey(0)
 
     ## find overlapping region using matches
-    MIN_MATCH_COUNT = 10
+    MIN_MATCH_COUNT = 5
     if len(good) > MIN_MATCH_COUNT:
 
         # query based off right key
@@ -87,9 +87,6 @@ def stitch(init_left, init_right, i):
     dst[0:img_left.shape[0], 0:img_left.shape[1]] = img_left
     stitched_img = trim(dst)
 
-    if i == 1:
-        cv2.imshow("stitched_img", stitched_img)
-        cv2.waitKey(0)
     ## return the trimmed composite after stitching the inputs
     return stitched_img
 
@@ -108,16 +105,6 @@ def trim(frame):
     if not np.sum(frame[:, -1]):
         return trim(frame[:, :-2])
     return frame
-
-def perspective_correct(img, i):
-    #rows, cols, ch = img.shape
-    pts1 = np.float32([[56, 65], [368, 52], [28, 387], [389, 390]])
-    pts2 = np.float32([[0, 0], [300, 0], [0, 300], [300, 300]])
-    M = cv2.getPerspectiveTransform(pts1, pts2)
-    dst = cv2.warpPerspective(img, M, (300, 300))
-    plt.subplot(121), plt.imshow(img), plt.title('Input')
-    plt.subplot(122), plt.imshow(dst), plt.title('Output')
-    plt.show()
 
 def rotate_img(image, angle):
     # grab the dimensions of the image and then determine the
@@ -146,19 +133,6 @@ def rotate_img(image, angle):
 def finalize_img(image):
     return rotate_img(image,180)
 
-def erase_black_lines(img):
-    # Create mask from all the black lines
-    mask = np.zeros((img.shape[0], img.shape[1]), np.uint8)
-    cv2.inRange(img, (0, 0, 0), (1, 1, 1), mask)
-    mask[mask == 0] = 1
-    mask[mask == 255] = 0
-    mask = mask * 255
-
-    b_channel, g_channel, r_channel = cv2.split(img)
-
-    # Create a new image with 4 channels the forth channel Aplha will give the opacity for each pixel
-    return cv2.merge((b_channel, g_channel, r_channel, mask))
-
 def yes_or_no():
     reply = str(input('would you like to use the debugging mode? (y/n): ')).lower().strip()
     if reply[0] == 'y':
@@ -176,22 +150,24 @@ def main(i):
     pathf = r"output0"
 
     comp0 = loopstitch(path0, i)
-    comp0 = rotate_img(comp0,-90)
+    cv2.imshow("comp0", comp0)
 
     comp1 = loopstitch(path1, i)
-    comp1 = rotate_img(comp1,-90)
+    cv2.imshow("comp1", comp1)
 
     # comp2 = loopstitch(path2)
-    # comp2 = rotate_img(comp2, -90)
-    #
+    # cv2.imshow("comp2", comp2)
+
     # comp3 = loopstitch(path3)
-    # comp3 = rotate_img(comp3, -90)
+    # cv2.imshow("comp3", comp3)
 
     output_comp = loopstitch(pathf, i)
 
     final = finalize_img(output_comp)
 
     cv2.imwrite("output0/final.jpg", final)
+    cv2.imshow("final.jpg", final)
+    cv2.waitKey(0)
 
 if __name__ == "__main__":
     i = yes_or_no()
