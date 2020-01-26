@@ -5,32 +5,25 @@ import cv2
 import numpy as np
 import time
 
-def loopstitch(path, i):
-    if i == 1:
-        start = time.time()
-
+def loopstitch(path):
     for indx, f in enumerate(os.listdir(path), start=0):
         j = path[len(path) - 1]
         if (len(os.listdir(path))-1>indx):
             img_left = os.path.join(path, os.listdir(path)[indx])
             img_right = os.path.join(path, os.listdir(path)[indx + 1])
-            comp = stitch(img_left, img_right, i)
+            comp = stitch(img_left, img_right)
             print("write to " + os.listdir(path)[indx + 1])
             ## command to save the composite
             cv2.imwrite(os.path.join(path, os.listdir(path)[indx + 1]), comp)
         else:
             print("loop complete")
 
-    if i == 1:
-        end = time.time()
-        print("time takem: "+str(end-start)+"ms")
-
     comp_rotate = rotate_img(comp, 90)
     cv2.imwrite("output0/test"+ str(j) + ".jpg", comp_rotate)
     print("comp_rotate written")
     return comp_rotate
 
-def stitch(init_left, init_right, i):
+def stitch(init_left, init_right):
     print("beginnging of stitch")
     ## read images using opencv library
     ## img_right/left used for disambiguity
@@ -51,15 +44,6 @@ def stitch(init_left, init_right, i):
     for m, n in matches:
         if m.distance < 0.5 *  n.distance:
             good.append(m)
-
-    if  i==1:
-        # parameters of lines
-        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, flags=2)
-
-        ## draw matches
-        img_matches = cv2.drawMatches(img_right, key_right, img_left, key_left, good, None, **draw_params)
-        cv2.imshow("debug_matches",img_matches)
-        cv2.waitKey(0)
 
     ## find overlapping region using matches
     MIN_MATCH_COUNT = 5
@@ -133,21 +117,12 @@ def rotate_img(image, angle):
 def finalize_img(image):
     return rotate_img(image,180)
 
-def yes_or_no():
-    reply = str(input('would you like to use the debugging mode? (y/n): ')).lower().strip()
-    if reply[0] == 'y':
-        return True
-    if reply[0] == 'n':
-        return False
-    else:
-        return yes_or_no("Uhhhh... please enter ")
-
-def loopstitch_wrapper(path, i):
-    comp = loopstitch(path, i)
+def loopstitch_wrapper(path):
+    comp = loopstitch(path)
     cv2.imshow("composite image", comp)
     return comp
 
-def stitching_main(i):
+def stitching_main(inputDir, outFilename, numRows, numCols):
     # for now, write out paths
     # DOTO:: pass paths in as a yaml or something
     # this way, main can be called by wrapper
@@ -155,9 +130,9 @@ def stitching_main(i):
     path1 = r"input1"
     pathf = r"output0"
 
-    comp0 = loopstitch_wrapper(path0, i)
-    comp1 = loopstitch_wrapper(path1, i)
-    output_comp = loopstitch_wrapper(pathf, i)
+    comp0 = loopstitch_wrapper(path0)
+    comp1 = loopstitch_wrapper(path1)
+    output_comp = loopstitch_wrapper(pathf)
 
     final = finalize_img(output_comp)
 
@@ -166,5 +141,8 @@ def stitching_main(i):
     cv2.waitKey(0)
 
 if __name__ == "__main__":
-    i = yes_or_no()
-    stitching_main(i)
+    if len(sys.argv) != 5:
+        print("Usage: argv[0] inputDir outFilename, numRows, numCols")
+        exit()
+
+    stitching_main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
