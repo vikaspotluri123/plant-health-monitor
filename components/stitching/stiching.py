@@ -147,16 +147,16 @@ def loopstitch_wrapper(path, i):
     cv2.imshow("composite image", comp)
     return comp
 
-def main(i):
+def stitching_main(i):
     # for now, write out paths
+    # DOTO:: pass paths in as a yaml or something
+    # this way, main can be called by wrapper
     path0 = r"input0"
     path1 = r"input1"
     pathf = r"output0"
 
     comp0 = loopstitch_wrapper(path0, i)
-
     comp1 = loopstitch_wrapper(path1, i)
-
     output_comp = loopstitch_wrapper(pathf, i)
 
     final = finalize_img(output_comp)
@@ -167,4 +167,4 @@ def main(i):
 
 if __name__ == "__main__":
     i = yes_or_no()
-    main(i)
+    stitching_main(i)
