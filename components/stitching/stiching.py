@@ -142,7 +142,7 @@ def stitching_main(inputDir, outFilename, numRows, numCols):
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: argv[0] inputDir outFilename, numRows, numCols")
+        print("Usage: stitching.py inputDir outFilename, numRows, numCols")
         exit()
 
     stitching_main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
