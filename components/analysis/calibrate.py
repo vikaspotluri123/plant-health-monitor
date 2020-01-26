@@ -12,7 +12,8 @@ class Calibration:
                      "bluemax": 0.0, "bluemin": 65535.0}
     seed_pass = False
     firstpass = True
-
+    calfolder = ""
+    input_path = ""
     JPGS = ["jpg", "JPG", "jpeg", "JPEG"]
     TIFS = ["tiff", "TIFF", "tif", "TIF"]
 
@@ -29,18 +30,16 @@ class Calibration:
 
 
 
-    def calibrate_prep(self):
+    def calibrate_prep(self, directory):
         self.firstpass = True
-        calfolder = r'C:\Users\Jennifer\Downloads\own_test_0'
+        self.input_path = directory
+        #r'C:\Users\Jennifer\Downloads\own_test_0'
         files = self.get_files()
-
         if "tif" or "TIF" or "jpg" or "JPG" in files[0]:
-            outdir = self.make_calibration_out_dir(calfolder)
-
+            outdir = self.make_calibration_out_dir()
         self.pixel_min_max = {"redmax": 0.0, "redmin": 65535.0,
                               "greenmax": 0.0, "greenmin": 65535.0,
                               "bluemax": 0.0, "bluemin": 65535.0}
-
         self.maxes = {}
         self.mins = {}
 
@@ -110,11 +109,11 @@ class Calibration:
 
         return int((slope * value) + intercept)
 
-    def make_calibration_out_dir(self, parent_dirname):
+    def make_calibration_out_dir(self):
         foldercount = 1
         endloop = False
         while endloop is False:
-            outdir = parent_dirname + os.sep + "Calibrated_" + str(foldercount)
+            outdir = self.input_path + os.sep + "Calibrated_" + str(foldercount)
 
             if os.path.exists(outdir):
                 foldercount += 1
@@ -205,15 +204,15 @@ class Calibration:
 
     def get_files(self):
         files = []
-        files.extend(Calibration.get_tiff_files_in_dir())
+        #files.extend(Calibration.get_tiff_files_in_dir())
         files.extend(Calibration.get_jpg_files_in_dir())
         return files
 
-    @staticmethod
-    def get_jpg_files_in_dir():
+    def get_jpg_files_in_dir(self):
         file_paths = []
-        file_paths.extend(glob.glob(r'C:\Users\Jennifer\Downloads\own_test_0' + os.sep + "*.[jJ][pP][gG]"))
-        file_paths.extend(glob.glob(r'C:\Users\Jennifer\Downloads\own_test_0' + os.sep + "*.[jJ][pP][eE][gG]"))
+        #r'C:\Users\Jennifer\Downloads\own_test_0'
+        file_paths.extend(glob.glob(self.input_path + os.sep + "*.[jJ][pP][gG]"))
+        file_paths.extend(glob.glob(self.input_path + os.sep + "*.[jJ][pP][eE][gG]"))
         return file_paths
 
     @staticmethod

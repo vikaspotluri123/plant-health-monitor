@@ -9,12 +9,14 @@ import cv2
 
 class CalculateIndex:
     ndvi = None
+    directory = ""
 
-    def applyIndexing(self):
+    def applyIndexing(self, out_path):
         files_to_index = self.get_files()
-        calfolder = r'C:\Users\Jennifer\Downloads\own_test_0'
-        outdir = self.make_calibration_out_dir(calfolder)
-        outdir2 = color.make_color_out_dir(calfolder)
+        #r'C:\Users\Jennifer\Downloads\own_test_0'
+        self.directory = out_path
+        outdir = self.make_index_out_dir()
+        outdir2 = color.make_color_out_dir(self.directory)
         for file in files_to_index:
             img = cv2.imread(file, cv2.IMREAD_UNCHANGED)
             self.processIndex(img)
@@ -64,16 +66,18 @@ class CalculateIndex:
 
     def get_files(self):
         files = []
-        files.extend(CalculateIndex.get_tiff_files_in_dir())
+        #files.extend(CalculateIndex.get_tiff_files_in_dir())
         files.extend(CalculateIndex.get_jpg_files_in_dir())
         return files
 
-    @staticmethod
-    def get_jpg_files_in_dir():
+
+    def get_jpg_files_in_dir(self):
         file_paths = []
-        file_paths.extend(glob.glob(r'C:\Users\Jennifer\Downloads\own_test_0\Calibrated_1' + os.sep + "*.[jJ][pP][gG]"))
+        #r'C:\Users\Jennifer\Downloads\own_test_0\Calibrated_1'
+        path = self.directory + "\Calibrated1"
+        file_paths.extend(glob.glob(path + os.sep + "*.[jJ][pP][gG]"))
         file_paths.extend(
-            glob.glob(r'C:\Users\Jennifer\Downloads\own_test_0\Calibrated_1' + os.sep + "*.[jJ][pP][eE][gG]"))
+            glob.glob(path + os.sep + "*.[jJ][pP][eE][gG]"))
         return file_paths
 
     @staticmethod
@@ -92,11 +96,11 @@ class CalculateIndex:
         else:
             indexed_image.save(out_image_path)
 
-    def make_calibration_out_dir(self, parent_dirname):
+    def make_index_out_dir(self):
         foldercount = 1
         endloop = False
         while endloop is False:
-            outdir = parent_dirname + os.sep + "Indexed_" + str(foldercount)
+            outdir = self.directory + os.sep + "Indexed_" + str(foldercount)
 
             if os.path.exists(outdir):
                 foldercount += 1
