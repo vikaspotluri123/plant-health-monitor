@@ -4,8 +4,6 @@ import sys
 import numpy as np
 import color
 from PyQt5 import QtGui, QtWidgets, QtCore
-import straight_line_detection as line
-import red_detection as red
 import cv2
 
 
@@ -29,8 +27,6 @@ class CalculateIndex:
 
             testing_LUT.save_colored_image(file, testing_LUT.LUT_to_save, outdir2)
 
-            #red.findRed(testing_LUT.LUT_to_save, file)
-            #line.drawLines(testing_LUT.LUT_to_save, file)
 
 
 
