@@ -1,7 +1,7 @@
 import calibrate
 import index
 
-directory = "", ""
+directory = ""
 testing_calibration = calibrate.Calibration()
 testing_calibration.calibrate_prep(directory)
 
