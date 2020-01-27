@@ -10,7 +10,7 @@ def analysis_main(directory):
     testing_index.applyIndexing(directory)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 2:
         print("Usage: stitching.py inputDirectory")
         exit()
 
