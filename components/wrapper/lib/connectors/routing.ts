@@ -3,7 +3,7 @@ import Base from './base';
 export default class RoutingConnector extends Base {
   implemented = true;
 
-  command = 'python';
+  command = 'python3';
 
   prepareArguments(...args: any[]): any[] {
     return ['../routing/routing.py', ...args];
