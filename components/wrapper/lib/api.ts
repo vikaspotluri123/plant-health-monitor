@@ -21,8 +21,8 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   await determineWaypoints(a, b, c, d);
   emitMessage('routingCompleted');
   // Step 2: upload waypoints to drone
-  await connectors.analysis.exec('upload');
-  emitMessage('routesUploaded');
+  // await connectors.analysis.exec('upload');
+  // emitMessage('routesUploaded');
   // Step 3: fly baby fly!
   // This will probably be tied to the WiFi library (we're waiting to be reconnected via WiFi)
   await connectors.navigation.exec();
@@ -34,7 +34,7 @@ export async function processImages(letter: string) {
   const inputDir = await connectors.clone.exec(letter);
   emitMessage('dataCopied');
 
-  const stitchedFilePath = await connectors.stitching.exec(inputDir);
+  const stitchedFilePath = await connectors.stitching.exec(inputDir, 'outfilename', 2, 2);
   emitMessage('stichingCompleted', stitchedFilePath);
 
   const colorizedFilePath = await connectors.analysis.exec(stitchedFilePath);

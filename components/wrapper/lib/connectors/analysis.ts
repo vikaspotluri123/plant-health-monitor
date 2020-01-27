@@ -9,7 +9,7 @@ export default class AnalysisConnector extends Base {
     return ['../analysis/main.py', ...args];
   }
 
-  processResult(result: string): void {
-    return;
+  processResult(result: string): string {
+    return result;
   }
 }

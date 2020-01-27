@@ -9,7 +9,7 @@ export default class StitchingConnector extends Base {
     return ['../stitching/stitching.py', ...args];
   }
 
-  processResult(result: string): void {
-    return;
+  processResult(result: string): string {
+    return result;
   }
 }
