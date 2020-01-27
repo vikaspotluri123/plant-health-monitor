@@ -1,21 +1,15 @@
 import Base from './base';
-import { PathLike } from 'fs';
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time));
 
 export default class AnalysisConnector extends Base {
-  command = '2250';
+  implemented = true;
 
-  prepareArguments(): [] {
-    return [];
+  command = 'python';
+
+  prepareArguments(...args: any[]): any[] {
+    return ['../analysis/main.py', ...args];
   }
 
-  processResult(result: string): string {
-    return result;
-  }
-
-  async exec(inputDir: PathLike): Promise<PathLike> {
-    console.log('Processing image in', inputDir);
-    await delay(1000);
-    return 'C:\\code\\plant-health-monitor\\img\\for-processing\\processed.png';
+  processResult(result: string): void {
+    return;
   }
 }
