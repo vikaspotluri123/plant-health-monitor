@@ -27,7 +27,7 @@ export class DroneConnection {
   }
 
   async ping(): Promise<void> {
-    console.log('pinging');
+
     let canConnect = await ping(this.connectionAddr);
     // @todo: remove randomness
     // canConnect = Math.random() <= 0.5;
