@@ -1,1 +1,1 @@
-I, Vikkas, am responsible for all mistakes made on this project
+I, Vikas, am responsible for all mistakes made on this project
