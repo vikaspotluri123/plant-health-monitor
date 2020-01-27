@@ -60,6 +60,11 @@ module.exports = class StartState extends State {
 		ipc.sendMessage(['plot', points]);
 	}
 
+	async handleBadPlot() {
+		await dialog.showMessageBox(null, {message: 'something broke 🙃', title: 'Something broke!'});
+		this.plotBtn.disabled = false;
+	}
+
 	async plot(data) {
 		const dta = JSON.stringify(data);
 		await this._map.executeJavaScript(`renderPoints(${dta})`);
