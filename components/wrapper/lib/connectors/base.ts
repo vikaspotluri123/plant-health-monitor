@@ -15,13 +15,14 @@ export default abstract class BaseComponentConnector {
   async exec(...passthrough: any[]) {
     if (this.implemented) {
       const args = this.prepareArguments(...passthrough);
-      
+
       try {
         const {stdout} = await execa(this.command, args);
 
         return this.processResult(stdout);
       } catch (error) {
         console.log(error);
+        return;
       }
     }
 
