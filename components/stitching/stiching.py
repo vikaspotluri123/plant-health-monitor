@@ -4,6 +4,7 @@ os.environ['OPENCV_IO_MAX_IMAGE_PIXELS']=str(2**64)
 import cv2
 import numpy as np
 import time
+import shutil
 
 def loopstitch(path):
     for indx, f in enumerate(os.listdir(path), start=0):
@@ -123,16 +124,40 @@ def loopstitch_wrapper(path):
     return comp
 
 def stitching_main(inputDir, outFilename, numRows, numCols):
-    # for now, write out paths
-    # DOTO:: pass paths in as a yaml or something
-    # this way, main can be called by wrapper
-    path0 = r"input0"
-    path1 = r"input1"
-    pathf = r"output0"
+    # set up output folder (delete it and recreate it if it already exists)
+    if not os.path.exists(outFilename):
+        os.makedirs(outFilename)
+    else:
+        shutil.rmdir(outFilename) # recursively delete?
+        os.makedirs(outFilename)
 
-    comp0 = loopstitch_wrapper(path0)
-    comp1 = loopstitch_wrapper(path1)
-    output_comp = loopstitch_wrapper(pathf)
+    # to hold all input paths
+    paths = []
+
+    # create a directory for each row
+    for i in range(0, numRows-1):
+        i = str(i)
+        if not os.path.exists('input' + i):
+            os.makedirs('input' + i)
+        else:
+            shutil.rmdir('input' + i)
+            os.makedirs('input' + i)
+        paths.append("input" + i)
+
+    # rotate images -90 degrees (might not be necessary in final product)
+    # for img in os.listdir(inputDir):
+    #     rotate_img(img, -90)
+
+    # move images into their respective directories
+    for i in range(0, numRows-1):
+        i = str(i)
+        for j in range(0, numCols-1):
+            shutil.move(os.listdir(inputDir)[0],"input"+i)
+
+    for i in paths:
+        loopstitch_wrapper(i)
+
+    output_comp = loopstitch_wrapper(outFilename)
 
     final = finalize_img(output_comp)
 
@@ -142,7 +167,7 @@ def stitching_main(inputDir, outFilename, numRows, numCols):
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: stitching.py inputDir outFilename, numRows, numCols")
+        print("Usage: argv[0] inputDir outFilename, numRows, numCols")
         exit()
 
     stitching_main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
