@@ -1,3 +1,4 @@
+import {resolve} from 'path';
 import Base from './base';
 
 export default class StitchingConnector extends Base {
@@ -5,8 +6,11 @@ export default class StitchingConnector extends Base {
 
   command = 'python3';
 
-  prepareArguments(...args: any[]): any[] {
-    return ['../stitching/stitching.py', ...args];
+  prepareArguments(basePath: string, tempDir: string): any[] {
+    const input = resolve(basePath, 'ingest');
+    const output = resolve(basePath, 'stitched.jpg');
+
+    return ['../stitching/stitching.py', input, output, 2, 2, tempDir];
   }
 
   processResult(result: string): string {

@@ -41,7 +41,7 @@ export async function processImages(letter: string) {
   const inputDir = await connectors.clone.exec(letter);
   emitMessage('dataCopied');
 
-  const stitchedFilePath = await connectors.stitching.exec(inputDir, 'outfilename', 2, 2);
+  const stitchedFilePath = await connectors.stitching.exec(folders.projectDir, folders.tempDir);
   emitMessage('stichingCompleted', stitchedFilePath);
 
   const colorizedFilePath = await connectors.analysis.exec(stitchedFilePath);
