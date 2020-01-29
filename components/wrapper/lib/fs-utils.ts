@@ -30,14 +30,18 @@ export async function init(): Promise<FSUtil> {
 
   const folderBase = `${today.getFullYear()}-${month}-${today.getDate()} ${hour} Run `;
   let folderSuffix = 1;
-  let docFolder;
+  let docFolder = resolve(dataFolder, folderBase + folderSuffix);
+  let folderType = 0;
 
-  do {
-    docFolder = resolve(dataFolder, folderBase + folderSuffix);
+  while (!folderType) {
+    folderType = await fs.readdir(docFolder).then(f => f.length === 0 ? 2 : 0).catch(_ => 0);
     folderSuffix++;
-  } while (await fs.stat(docFolder).catch(_ => null));
+    docFolder = resolve(dataFolder, folderBase + folderSuffix);
+  }
 
-  await fs.mkdir(docFolder);
+  if (folderType === 1) {
+    await fs.mkdir(docFolder);
+  }
 
   return {
     projectDir: docFolder,
