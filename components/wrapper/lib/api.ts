@@ -1,6 +1,9 @@
 import EventEmitter from 'events';
 import * as connectors from './connectors';
+import * as fsUtils from './fs-utils';
 import instance from './drone-connection';
+
+let folders: fsUtils.FSUtil;
 
 export const events = new EventEmitter();
 
@@ -13,6 +16,10 @@ instance.events.on('connection.restored', () => emitMessage('drone.connected'));
 
 export async function determineWaypoints(a: string, b: string, c: string, d: string) {
   return await connectors.routing.exec(a, b, c, d);
+}
+
+export async function init() {
+  folders = await fsUtils.init();
 }
 
 export async function flyOver(a: string, b: string, c: string, d: string) {
