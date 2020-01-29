@@ -16,9 +16,15 @@ export default abstract class BaseComponentConnector {
     if (this.implemented) {
       const args = this.prepareArguments(...passthrough);
 
-      const {stdout} = await execa(this.command, args);
+      try {
+        console.log(`Running ${this.command} ${args.join(' ')}`);
+        const {stdout} = await execa(this.command, args);
 
-      return this.processResult(stdout);
+        return this.processResult(stdout);
+      } catch (error) {
+        console.log(error);
+        return;
+      }
     }
 
     console.log('Not implemented, delaying', this.command);

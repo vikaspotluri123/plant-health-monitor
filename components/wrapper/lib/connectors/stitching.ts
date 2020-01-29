@@ -1,22 +1,19 @@
+import {resolve} from 'path';
 import Base from './base';
-import {PathLike} from 'fs';
-
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time));
 
 export default class StitchingConnector extends Base {
-  command = '5000';
+  implemented = true;
 
-  prepareArguments(): [] {
-    return [];
+  command = 'python3';
+
+  prepareArguments(basePath: string, tempDir: string): any[] {
+    const input = resolve(basePath, 'ingest');
+    const output = resolve(basePath, 'stitched.jpg');
+
+    return ['../stitching/stitching.py', input, output, 2, 2, tempDir];
   }
 
   processResult(result: string): string {
     return result;
-  }
-
-  async exec(inputDir: PathLike): Promise<PathLike> {
-    console.log('Processing data in', inputDir);
-    await delay(5000);
-    return 'C:\\code\\plant-health-monitor\\img\\for-processing\\img.jpg';
   }
 }

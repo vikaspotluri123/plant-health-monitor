@@ -18,7 +18,7 @@ class IPCManager {
 		this.setAction = require('./util/set-action');
 		this.setConnected = require('./util/set-connected');
 		this.ipc = ipcRenderer;
-		
+
 		ipcRenderer.on('backend-response', (...args) =>  this._processResponse(...args));
 		ipcRenderer.on('renderer-error', (_, error) => {
 			window.alert(error);
@@ -52,13 +52,17 @@ class IPCManager {
 				states[2].stitchedImage = data;
 				states[2].activate();
 				break;
-			case 'imageProcessed': 
+			case 'imageProcessed':
 				this.setAction('Successfully completed run');
 				states[2].highlightImage = data;
 				states[2].activate();
 				break;
 			case 'generatedPoints':
-				states[0].plot(data);
+				if (data) {
+					states[0].plot(data);
+				} else {
+					states[0].handleBadPlot();
+				}
 			default:
 				if (name in ACTION_MESSAGES) {
 					this.setAction(ACTION_MESSAGES[name]);
