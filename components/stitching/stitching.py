@@ -5,6 +5,9 @@ import cv2
 import numpy as np
 import time
 import shutil
+from pathlib import Path
+
+PATH_SEP = os.path.sep
 
 def loopstitch(path):
     for indx, f in enumerate(os.listdir(path), start=0):
@@ -124,35 +127,30 @@ def loopstitch_wrapper(path):
     return comp
 
 def stitching_main(inputDir, outFilename, numRows, numCols):
-    # set up output folder (delete it and recreate it if it already exists)
-    if not os.path.exists(outFilename):
-        os.makedirs(outFilename)
-    else:
-        shutil.rmdir(outFilename) # recursively delete?
-        os.makedirs(outFilename)
-
     # to hold all input paths
     paths = []
 
     # create a directory for each row
-    for i in range(0, numRows-1):
+    for i in range(0, numRows):
         i = str(i)
-        if not os.path.exists('input' + i):
-            os.makedirs('input' + i)
-        else:
-            shutil.rmdir('input' + i)
-            os.makedirs('input' + i)
-        paths.append("input" + i)
+        file = inputDir + PATH_SEP + "input" + i
+
+        if os.path.exists(file):
+            shutil.rmtree(file)
+
+        os.makedirs(file)
+        paths.append(file)
 
     # rotate images -90 degrees (might not be necessary in final product)
     # for img in os.listdir(inputDir):
     #     rotate_img(img, -90)
 
     # move images into their respective directories
-    for i in range(0, numRows-1):
+    for i in range(0, numRows):
         i = str(i)
-        for j in range(0, numCols-1):
-            shutil.move(os.listdir(inputDir)[0],"input"+i)
+        for j in range(0, numCols):
+            # @NOTE: we always use the first file since the previous file was moved!
+            shutil.move(inputDir + PATH_SEP + os.listdir(inputDir)[0], inputDir + PATH_SEP + "input" + i)
 
     for i in paths:
         loopstitch_wrapper(i)
@@ -161,13 +159,13 @@ def stitching_main(inputDir, outFilename, numRows, numCols):
 
     final = finalize_img(output_comp)
 
-    cv2.imwrite("output0/final.jpg", final)
-    cv2.imshow("final.jpg", final)
+    cv2.imwrite(outFilename, final)
+    # cv2.imshow("final.jpg", final)
     cv2.waitKey(0)
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
         print("Usage: argv[0] inputDir outFilename, numRows, numCols")
-        exit()
+        exit(1)
 
-    stitching_main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    stitching_main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
