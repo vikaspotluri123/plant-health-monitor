@@ -2,16 +2,17 @@ import calibrate
 import index
 import sys
 
-def analysis_main(directory):
-    testing_calibration = calibrate.Calibration()
-    testing_calibration.calibrate_prep(directory)
+def analysis_main(input_file, output_file):
+    calibration = calibrate.Calibration()
+    calibration.calibrate_prep(input_file)
 
-    testing_index = index.CalculateIndex()
-    testing_index.applyIndexing(directory)
+    indexing = index.CalculateIndex()
+    indexing.applyIndexing(calibration.img_to_pass, output_file)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: stitching.py inputDirectory")
-        exit()
+        exit() 
 
     analysis_main(sys.argv[1])
+

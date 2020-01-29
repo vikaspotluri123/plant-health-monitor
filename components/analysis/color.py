@@ -1,11 +1,6 @@
 import numpy as np
 import copy
-import glob
-import sys
-import os
 import cv2
-from PyQt5 import QtGui, QtWidgets, QtCore
-
 
 class LUT:
     ndvipsuedo = None
@@ -26,15 +21,8 @@ class LUT:
     def __init__(self, parent=None):
         self.parent = parent
 
-    def applyLUT(self, file):
-        #files_to_color = self.get_files()
-        #calfolder = r'C:\Users\Jennifer\Downloads\own_test_0'
-        #if "tif" or "TIF" or "jpg" or "JPG" in files_to_color[0]:
-        #outdir = self.make_color_out_dir(calfolder)
+    def applyLUT(self):
         self.processLUT()
-        #frame = QtGui.QImage(self.ndvipsuedo.data, w, h, w * 4, QtGui.QImage.Format_RGBA8888)
-        #self.save_colored_image(file, self.LUT_to_save, outdir)
-
 
     def processLUT(self):
         self._lut = np.zeros((256, 1, 3), dtype=np.uint8)
@@ -99,23 +87,6 @@ class LUT:
             print(e)
 
 
-    def save_colored_image(self, in_image_path, indexed_image, out_dir):
-        out_image_path = out_dir + "\COLORED_" + in_image_path.split('\\')[-1]
-        if 'tif' in in_image_path.split('.')[1].lower():
-            cv2.imencode(".tif", indexed_image)
-            cv2.imwrite(out_image_path, indexed_image)
-        else:
-            cv2.imwrite(out_image_path, indexed_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+    def save_colored_image(self, indexed_image, out_dir):
+        cv2.imwrite(out_dir, indexed_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
-def make_color_out_dir(parent_dirname):
-        foldercount = 1
-        endloop = False
-        while endloop is False:
-            outdir = parent_dirname + os.sep + "Colored_" + str(foldercount)
-
-            if os.path.exists(outdir):
-                foldercount += 1
-            else:
-                os.mkdir(outdir)
-                endloop = True
-        return outdir
