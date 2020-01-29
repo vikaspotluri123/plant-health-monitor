@@ -7,10 +7,10 @@ export default class StitchingConnector extends Base {
   command = 'python3';
 
   prepareArguments(basePath: string, tempDir: string): any[] {
-    const input = resolve(basePath, 'ingest');
-    const output = resolve(basePath, 'stitched.jpg');
+    const input = `"${resolve(basePath, 'ingest')}"`;
+    const output = `"${resolve(basePath, 'stitched.jpg')}"`;
 
-    return ['../stitching/stitching.py', input, output, 2, 2, tempDir];
+    return ['../stitching/stitching.py', input, output, 2, 2];
   }
 
   processResult(result: string): string {

@@ -1,3 +1,4 @@
+import {resolve} from 'path';
 import Base from './base';
 
 export default class AnalysisConnector extends Base {
@@ -5,8 +6,11 @@ export default class AnalysisConnector extends Base {
 
   command = 'python3';
 
-  prepareArguments(...args: any[]): any[] {
-    return ['../analysis/main.py', ...args];
+  prepareArguments(basePath: string): any[] {
+    const input = `"${resolve(basePath, 'stitching.jpg')}"`;
+    const output = `"${resolve(basePath, 'analyzed.jpg')}"`;
+
+    return ['../analysis/main.py', input, output];
   }
 
   processResult(result: string): string {
