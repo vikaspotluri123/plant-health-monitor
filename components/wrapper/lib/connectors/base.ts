@@ -17,6 +17,7 @@ export default abstract class BaseComponentConnector {
       const args = this.prepareArguments(...passthrough);
 
       try {
+        console.log(`Running ${this.command} ${args.join(' ')}`);
         const {stdout} = await execa(this.command, args);
 
         return this.processResult(stdout);
