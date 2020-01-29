@@ -10,9 +10,9 @@ def analysis_main(input_file, output_file):
     indexing.applyIndexing(calibration.img_to_pass, output_file)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage: stitching.py inputDirectory")
-        exit() 
+        exit()
 
-    analysis_main(sys.argv[1])
+    analysis_main(sys.argv[1], sys.argv[2])
 
