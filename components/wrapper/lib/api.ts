@@ -4,6 +4,7 @@ import * as connectors from './connectors';
 import * as fsUtils from './fs-utils';
 import instance from './drone-connection';
 
+let folderReadyPromise: Promise<fsUtils.FSUtil>;
 let folders: fsUtils.FSUtil;
 
 export const events = new EventEmitter();
@@ -20,7 +21,8 @@ export async function determineWaypoints(a: string, b: string, c: string, d: str
 }
 
 export async function init() {
-  folders = await fsUtils.init();
+  folderReadyPromise = fsUtils.init();
+  folders = await folderReadyPromise;
 }
 
 export async function flyOver(a: string, b: string, c: string, d: string) {
@@ -38,6 +40,7 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
 }
 
 export async function processImages(letter: string) {
+  await folderReadyPromise;
   const tempDir = `"${folders.tempDir}"`;
   const copyDest = `"${resolve(folders.projectDir, 'ingest')}"`.replace(/\/\//g, '');
   const stitchedFile = `"${resolve(folders.projectDir, 'stitched.jpg')}"`.replace(/\/\//g, '');
