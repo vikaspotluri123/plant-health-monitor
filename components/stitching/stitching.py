@@ -7,23 +7,25 @@ import time
 import shutil
 from pathlib import Path
 
-PATH_SEP = os.path.sep
+def _join(base, path):
+    return os.path.join(base, path);
 
-def loopstitch(path):
-    for indx, f in enumerate(os.listdir(path), start=0):
-        j = path[len(path) - 1]
-        if (len(os.listdir(path))-1>indx):
-            img_left = os.path.join(path, os.listdir(path)[indx])
-            img_right = os.path.join(path, os.listdir(path)[indx + 1])
-            comp = stitch(img_left, img_right)
-            print("write to " + os.listdir(path)[indx + 1])
-            ## command to save the composite
-            cv2.imwrite(os.path.join(path, os.listdir(path)[indx + 1]), comp)
-        else:
-            print("loop complete")
+def loopstitch(inputDir, outputPath):
+    fileList = os.listdir(inputDir);
+    shutil.copy(_join(inputDir, fileList[0]), outputPath)
 
-    comp_rotate = rotate_img(comp, 90)
-    cv2.imwrite("output0/test"+ str(j) + ".jpg", comp_rotate)
+    for indx, f in enumerate(fileList, start = 1):
+        if (indx > len(fileList) - 1):
+            break
+        img_left = outputPath
+        img_right = _join(inputDir, fileList[indx])
+        comp = stitch(img_left, img_right)
+        print("write to " + outputPath)
+        ## command to save the composite
+        cv2.imwrite(outputPath, comp)
+
+    comp_rotate = rotate_img(cv2.imread(outputPath), 90)
+    cv2.imwrite(outputPath, comp_rotate)
     print("comp_rotate written")
     return comp_rotate
 
@@ -121,23 +123,22 @@ def rotate_img(image, angle):
 def finalize_img(image):
     return rotate_img(image,180)
 
-def loopstitch_wrapper(path):
-    comp = loopstitch(path)
+def loopstitch_wrapper(path, outputFile):
+    comp = loopstitch(path, outputFile)
     cv2.imshow("composite image", comp)
     return comp
 
-def stitching_main(inputDir, outFilename, numRows, numCols):
+def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
     # to hold all input paths
     paths = []
 
     # create a directory for each row
     for i in range(0, numRows):
         i = str(i)
-        file = inputDir + PATH_SEP + "input" + i
+        file = _join(inputDir, "input" + i)
 
         if os.path.exists(file):
             shutil.rmtree(file)
-
         os.makedirs(file)
         paths.append(file)
 
@@ -150,22 +151,27 @@ def stitching_main(inputDir, outFilename, numRows, numCols):
         i = str(i)
         for j in range(0, numCols):
             # @NOTE: we always use the first file since the previous file was moved!
-            shutil.move(inputDir + PATH_SEP + os.listdir(inputDir)[0], inputDir + PATH_SEP + "input" + i)
+            shutil.move(_join(inputDir, os.listdir(inputDir)[0]), _join(inputDir, "input" + i))
 
     for i in paths:
-        loopstitch_wrapper(i)
+        loopstitch_wrapper(i, _join(tmpDir, i.replace(inputDir + '\\', '') + ".jpg"))
 
-    output_comp = loopstitch_wrapper(outFilename)
+    output_comp = loopstitch_wrapper(tmpDir, outFilename)
 
     final = finalize_img(output_comp)
 
     cv2.imwrite(outFilename, final)
     # cv2.imshow("final.jpg", final)
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: argv[0] inputDir outFilename, numRows, numCols")
-        exit(1)
-
-    stitching_main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
+    if len(sys.argv) != 6:
+        print("Usage: argv[0] {inputDir} {outFilename} {numRows} {numCols} {tmpDir}", file=sys.stderr)
+        sys.exit(1)
+    stitching_main(
+        sys.argv[1].replace('"', ''),
+        sys.argv[2].replace('"', ''),
+        int(sys.argv[3]),
+        int(sys.argv[4]),
+        sys.argv[5].replace('"', '')
+    )
