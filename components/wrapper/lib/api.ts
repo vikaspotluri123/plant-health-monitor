@@ -1,3 +1,4 @@
+import {resolve} from 'path';
 import EventEmitter from 'events';
 import * as connectors from './connectors';
 import * as fsUtils from './fs-utils';
@@ -37,15 +38,20 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
 }
 
 export async function processImages(letter: string) {
+  const tempDir = `"${folders.tempDir}"`;
+  const copyDest = `"${resolve(folders.projectDir, 'ingest')}"`.replace(/\/\//g, '');
+  const stitchedFile = `"${resolve(folders.projectDir, 'stitched.jpg')}"`.replace(/\/\//g, '');
+  const analyzedFile =  `"${resolve(folders.projectDir, 'analyzed.jpg')}"`.replace(/\/\//g, '');
+
   emitMessage('copyingData');
-  const inputDir = await connectors.clone.exec(letter);
+  await connectors.clone.exec(letter, copyDest);
   emitMessage('dataCopied');
 
-  const stitchedFilePath = await connectors.stitching.exec('C:\\temp\\images', 'C:\\tmp');
-  emitMessage('stichingCompleted', 'C:\\temp\\images\\stitched.jpg');
+  await connectors.stitching.exec(copyDest, stitchedFile, tempDir);
+  emitMessage('stichingCompleted', stitchedFile);
 
-  const colorizedFilePath = await connectors.analysis.exec('C:\\temp\\images');
-  emitMessage('imageProcessed', 'C:\\temp\\images\\analyzed.jpg');
+  await connectors.analysis.exec(stitchedFile, analyzedFile);
+  emitMessage('imageProcessed', analyzedFile);
 }
 
 export function isConnected() {
