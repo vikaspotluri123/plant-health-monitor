@@ -49,12 +49,12 @@ class IPCManager {
 				break;
 			case 'stichingCompleted':
 				this.setAction('Determining at-risk regions');
-				states[2].stitchedImage = data;
+				states[2].stitchedImage = data.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'imageProcessed':
 				this.setAction('Successfully completed run');
-				states[2].highlightImage = data;
+				states[2].highlightImage = data.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'generatedPoints':
