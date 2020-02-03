@@ -7,8 +7,8 @@ export default class AnalysisConnector extends Base {
   command = 'python3';
 
   prepareArguments(basePath: string): any[] {
-    const input = `"${resolve(basePath, 'stitching.jpg')}"`;
-    const output = `"${resolve(basePath, 'analyzed.jpg')}"`;
+    const input = `"${resolve(basePath, 'stitched.jpg')}"`.replace(/\/\//g, '');
+    const output = `"${resolve(basePath, 'analyzed.jpg')}"`.replace(/\/\//g, '');
 
     return ['../analysis/main.py', input, output];
   }

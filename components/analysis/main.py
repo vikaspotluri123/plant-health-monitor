@@ -14,5 +14,8 @@ if __name__ == "__main__":
         print("Usage: stitching.py inputDirectory")
         exit()
 
-    analysis_main(sys.argv[1], sys.argv[2])
+    analysis_main(
+        sys.argv[1].replace('"', ''),
+        sys.argv[2].replace('"', '')
+    )
 
