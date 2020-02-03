@@ -1,7 +1,7 @@
 import assert from 'assert';
-import {promises as fs, Stats, PathLike} from 'fs';
+import {promises as fs} from 'fs';
 import path from 'path';
-import {EXEC_ERROR} from './base';
+import {EXEC_ERROR, EXEC_ERROR_INTERFACE} from './base';
 
 const DRIVE_LETTERS = ['d', 'e', 'f', 'g'];
 
@@ -23,7 +23,7 @@ async function getAllFiles(source: string): Promise<string[]> {
 }
 
 export default class AnalysisConnector {
-    async exec(drive: string, outputFolder: string) {
+    async exec(drive: string, outputFolder: string): Promise<void | EXEC_ERROR_INTERFACE> {
         outputFolder = outputFolder.replace(/"/g, '');
         assert(DRIVE_LETTERS.includes(drive), 'Invalid drive');
         const fromDir = `${drive}:\\\\demo-pics`; // @todo: determine camera output
@@ -50,7 +50,5 @@ export default class AnalysisConnector {
             const outputFile = path.resolve(outputFolder, relPath);
             await fs.copyFile(file, outputFile)
         }
-
-        return true;
     }
 }

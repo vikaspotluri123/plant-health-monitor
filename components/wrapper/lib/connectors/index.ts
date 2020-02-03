@@ -9,4 +9,4 @@ export const navigation = new NavigationConnector();
 export const routing = new RoutingConnector();
 export const stitching = new StitchingConnector();
 export const clone = new CloneConnector();
-export {EXEC_ERROR} from './base';
+export {EXEC_ERROR, EXEC_ERROR_INTERFACE} from './base';

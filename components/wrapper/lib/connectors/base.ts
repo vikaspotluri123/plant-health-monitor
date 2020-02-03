@@ -4,6 +4,12 @@ const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time)
 
 export const EXEC_ERROR = Symbol('exec_error');
 
+export interface EXEC_ERROR_INTERFACE {
+  [EXEC_ERROR]: true,
+  stdout: string;
+  stderr: string;
+};
+
 export default abstract class BaseComponentConnector {
 
   implemented: boolean = false;

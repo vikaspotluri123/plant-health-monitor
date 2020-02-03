@@ -47,13 +47,28 @@ export async function processImages(letter: string) {
   const analyzedFile =  `"${resolve(folders.projectDir, 'analyzed.jpg')}"`.replace(/\/\//g, '');
 
   emitMessage('copyingData');
-  await connectors.clone.exec(letter, copyDest);
+  let res = await connectors.clone.exec(letter, copyDest);
+
+  if (res && res[connectors.EXEC_ERROR] === true) {
+    return emitMessage('error', ['copy_data', res.stderr]);
+  }
+
   emitMessage('dataCopied');
 
-  await connectors.stitching.exec(copyDest, stitchedFile, tempDir);
+  res = await connectors.stitching.exec(copyDest, stitchedFile, tempDir);
+
+  if (res && res[connectors.EXEC_ERROR] === true) {
+    return emitMessage('error', ['copy_data', res.stderr]);
+  }
+
   emitMessage('stichingCompleted', stitchedFile);
 
-  await connectors.analysis.exec(stitchedFile, analyzedFile);
+  res = await connectors.analysis.exec(stitchedFile, analyzedFile);
+
+  if (res && res[connectors.EXEC_ERROR] === true) {
+    return emitMessage('error', ['copy_data', res.stderr]);
+  }
+
   emitMessage('imageProcessed', analyzedFile);
 }
 
