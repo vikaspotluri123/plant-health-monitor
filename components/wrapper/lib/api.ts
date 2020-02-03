@@ -41,11 +41,11 @@ export async function processImages(letter: string) {
   const inputDir = await connectors.clone.exec(letter);
   emitMessage('dataCopied');
 
-  const stitchedFilePath = await connectors.stitching.exec('C:\\temp\\images', 'folders.tempDir');
-  emitMessage('stichingCompleted', stitchedFilePath);
+  const stitchedFilePath = await connectors.stitching.exec('C:\\temp\\images', 'C:\\tmp');
+  emitMessage('stichingCompleted', 'C:\\temp\\images\\stitched.jpg');
 
   const colorizedFilePath = await connectors.analysis.exec('C:\\temp\\images');
-  emitMessage('imageProcessed', colorizedFilePath);
+  emitMessage('imageProcessed', 'C:\\temp\\images\\analyzed.jpg');
 }
 
 export function isConnected() {
