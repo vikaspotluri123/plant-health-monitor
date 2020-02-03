@@ -28,23 +28,24 @@ export async function init(): Promise<FSUtil> {
     await fs.mkdir(dataFolder);
   }
 
-  const folderBase = `${today.getFullYear()}-${month}-${today.getDate()} ${hour} Run `;
-  let folderSuffix = 1;
-  let docFolder = resolve(dataFolder, folderBase + folderSuffix);
+  const folderBase = `Run `;
+  let folderSuffix = 0;
+  let projectDir = resolve(dataFolder, folderBase + folderSuffix);
   let folderType = 0;
 
   while (!folderType) {
-    folderType = await fs.readdir(docFolder).then(f => f.length === 0 ? 2 : 0).catch(_ => 0);
     folderSuffix++;
-    docFolder = resolve(dataFolder, folderBase + folderSuffix);
+    projectDir = resolve(dataFolder, folderBase + folderSuffix);
+    folderType = await fs.readdir(projectDir).then(f => f.length === 0 ? 2 : 0).catch(_ => 1);
   }
 
+  // CASE: folder doesn't exist
   if (folderType === 1) {
-    await fs.mkdir(docFolder);
+    await fs.mkdir(projectDir);
   }
 
   return {
-    projectDir: docFolder,
+    projectDir,
     tempDir: tmpFolder
   };
 }
