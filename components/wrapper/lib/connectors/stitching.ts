@@ -1,4 +1,3 @@
-import {resolve} from 'path';
 import Base from './base';
 
 export default class StitchingConnector extends Base {
