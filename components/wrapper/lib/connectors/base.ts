@@ -2,6 +2,8 @@ const execa = require('execa');
 
 const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time));
 
+export const EXEC_ERROR = Symbol('exec_error');
+
 export default abstract class BaseComponentConnector {
 
   implemented: boolean = false;
@@ -23,7 +25,11 @@ export default abstract class BaseComponentConnector {
         return this.processResult(stdout);
       } catch (error) {
         console.log(error);
-        return;
+        return {
+          stdout: error.stdout,
+          stderr: error.stderr,
+          [EXEC_ERROR]: true
+        };
       }
     }
 
