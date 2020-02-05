@@ -32,7 +32,7 @@ class Coordinate:
 
 # check if validation passes
 def validateDistance(h, v):
-    return abs((h**2 + v**2)**(0.5) - GRID_UNIT) < GRID_UNIT*0.1
+    return abs((h**2 + v**2)**(0.5) - GRID_UNIT) < GRID_UNIT*0.15
 
 class Navigation:
 
@@ -73,7 +73,7 @@ class Navigation:
                 tempPath.append(Coordinate(mover.latitude / METERS_IN_DEG_LAT, mover.longitude / METERS_IN_DEG_LON))
 
                 if not validateDistance(hsteps1, vsteps1):
-                    sys.exit("ERROR: Distance between coordinates is not within 10%% of expected value")
+                    sys.exit("ERROR: Distance between coordinates is not within 15%% of expected value")
 
                 # fix order if we are on a reverse row
                 if reverse:
