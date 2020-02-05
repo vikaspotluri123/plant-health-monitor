@@ -15,7 +15,6 @@ class Calibration:
     input_path = ""
     img_to_pass = None
     JPGS = ["jpg", "JPG", "jpeg", "JPEG"]
-    TIFS = ["tiff", "TIFF", "tif", "TIF"]
 
     BASE_COEFF_SURVEY3_RGN_JPG = {"red": {"slope": 1.3289958195489457, "intercept": -0.17638075239399503},
                                   "green": {"slope": 1.2902528664499517, "intercept": -0.15262065349606874},
@@ -134,6 +133,7 @@ class Calibration:
         layers = (blue, green, red, alpha) if has_alpha_layer else (blue, green, red)
         refimg = cv2.merge(layers)
         self.img_to_pass = refimg
+        cv2.imwrite(r'C:\Users\Jennifer\Downloads\own_test_0\calibrated.JPG', self.img_to_pass)
 
     def calibrate_channel(self, channel, slope, intercept):
         return channel * slope + intercept

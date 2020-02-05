@@ -12,17 +12,17 @@ class CalculateIndex:
         #h, w = calibrated_image.shape[:2]
         #qImg = QtGui.QImage(self.ndvi.data, w, h, w, QtGui.QImage.Format_Grayscale8)
 
+        cv2.imwrite(r'C:\Users\Jennifer\Downloads\own_test_0\indexed.JPG', self.ndvi)
+
         testing_LUT = color.LUT(self)
         testing_LUT.applyLUT()
+
 
         testing_LUT.save_colored_image(testing_LUT.LUT_to_save, output_file)
 
 
-
-
-
     def processIndex(self, img):
-        self.ndvi = self.calculateIndex(img[:, :, 2], img[:, :, 0])
+        self.ndvi = self.calculateIndex(img[:, :, 0], img[:, :, 2])
         self.ndvi -= self.ndvi.min()
         self.ndvi /= (self.ndvi.max())
         self.ndvi *= 255.0
