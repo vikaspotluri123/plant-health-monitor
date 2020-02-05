@@ -1,7 +1,7 @@
 const State = require('./start');
 const ipc = require('../ipc');
 
-module.exports = class ProcessingState extends State {
+module.exports = class ResultState extends State {
     get parentNode() {
         return '#results';
     }
@@ -39,5 +39,11 @@ module.exports = class ProcessingState extends State {
         if (this._highlightImage) {
             this._highlightNode.setAttribute('src', this._highlightImage);
         }
+    }
+
+    reset() {
+        this._highlightImage = null;
+        this._stitchedImage = null;
+        this.rerender();
     }
 };

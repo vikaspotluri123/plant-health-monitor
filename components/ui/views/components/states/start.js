@@ -65,6 +65,12 @@ module.exports = class StartState extends State {
 		this.plotBtn.disabled = false;
 	}
 
+	reset() {
+		this.plotBtn.disabled = false;
+		this._busy = false;
+		this.launchBtn.disabled = false;
+	}
+
 	async plot(data) {
 		const dta = JSON.stringify(data);
 		await this._map.executeJavaScript(`renderPoints(${dta})`);

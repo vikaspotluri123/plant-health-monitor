@@ -12,7 +12,7 @@ module.exports = class State {
 
   set previous(state) {
     if (!state instanceof State) {
-      throw new Error('NextState must extend the State class');
+      throw new Error('PreviousState must extend the State class');
     }
 
     this._previous = state;
@@ -47,6 +47,10 @@ module.exports = class State {
 
   init() {
     // noop
+  }
+
+  reset() {
+    console.warn(this.constructor.name, 'has not implemented reset');
   }
 
   on(node, event, fn) {
