@@ -10,6 +10,13 @@ from pathlib import Path
 def _join(base, path):
     return os.path.join(base, path);
 
+def _getFirstFile(path):
+    files = os.listdir(path);
+    for file in files:
+        _file = _join(path, file)
+        if (os.path.isfile(_file)):
+            return _file
+
 def loopstitch(inputDir, outputPath):
     fileList = os.listdir(inputDir);
     shutil.copy(_join(inputDir, fileList[0]), outputPath)
@@ -151,7 +158,7 @@ def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
         i = str(i)
         for j in range(0, numCols):
             # @NOTE: we always use the first file since the previous file was moved!
-            shutil.move(_join(inputDir, os.listdir(inputDir)[0]), _join(inputDir, "input" + i))
+            shutil.move(_join(inputDir, _getFirstFile(inputDir)), _join(inputDir, "input" + i))
 
     for i in paths:
         loopstitch_wrapper(i, _join(tmpDir, i.replace(inputDir + '\\', '') + ".jpg"))
