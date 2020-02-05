@@ -7,6 +7,8 @@ import time
 import shutil
 from pathlib import Path
 
+_DEBUG_ = sys.stdin.isatty();
+
 def _join(base, path):
     return os.path.join(base, path);
 
@@ -27,17 +29,20 @@ def loopstitch(inputDir, outputPath):
         img_left = outputPath
         img_right = _join(inputDir, fileList[indx])
         comp = stitch(img_left, img_right)
-        print("write to " + outputPath)
+        if (_DEBUG_):
+           print("write to " + outputPath)
         ## command to save the composite
         cv2.imwrite(outputPath, comp)
 
     comp_rotate = rotate_img(cv2.imread(outputPath), 90)
     cv2.imwrite(outputPath, comp_rotate)
-    print("comp_rotate written")
+    if (_DEBUG_):
+       print("comp_rotate written")
     return comp_rotate
 
 def stitch(init_left, init_right):
-    print("beginnging of stitch")
+    if (_DEBUG_):
+       print("beginnging of stitch")
     ## read images using opencv library
     ## img_right/left used for disambiguity
     img_left = cv2.imread(init_left)
@@ -132,7 +137,8 @@ def finalize_img(image):
 
 def loopstitch_wrapper(path, outputFile):
     comp = loopstitch(path, outputFile)
-    cv2.imshow("composite image", comp)
+    if (_DEBUG_):
+       cv2.imshow("composite image", comp)
     return comp
 
 def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
@@ -168,13 +174,15 @@ def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
     final = finalize_img(output_comp)
 
     cv2.imwrite(outFilename, final)
-    # cv2.imshow("final.jpg", final)
-    # cv2.waitKey(0)
+    if (_DEBUG_):
+       cv2.imshow("final.jpg", final)
+       cv2.waitKey(0)
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
         print("Usage: argv[0] {inputDir} {outFilename} {numRows} {numCols} {tmpDir}", file=sys.stderr)
         sys.exit(1)
+
     stitching_main(
         sys.argv[1].replace('"', ''),
         sys.argv[2].replace('"', ''),
