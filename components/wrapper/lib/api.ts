@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import * as connectors from './connectors';
 import * as fsUtils from './fs-utils';
 import instance from './drone-connection';
+import timer from './timer';
 
 let folderReadyPromise: Promise<fsUtils.FSUtil>;
 let folders: fsUtils.FSUtil;
@@ -27,33 +28,35 @@ export async function init() {
 
 export async function flyOver(a: string, b: string, c: string, d: string) {
   console.log('Starting flyover');
+  timer.reset();
   // Step 1: determine waypoints
   await determineWaypoints(a, b, c, d);
-  emitMessage('routingCompleted');
+  emitMessage('routingCompleted', {time: timer.next()});
   // Step 2: upload waypoints to drone
   // await connectors.analysis.exec('upload');
   // emitMessage('routesUploaded');
   // Step 3: fly baby fly!
   // This will probably be tied to the WiFi library (we're waiting to be reconnected via WiFi)
   await connectors.navigation.exec();
-  emitMessage('navigationComplete');
+  emitMessage('navigationComplete', {time: timer.next()});
 }
 
 export async function processImages(letter: string) {
+  timer.reset();
   await folderReadyPromise;
   const tempDir = `"${folders.tempDir}"`;
   const copyDest = `"${resolve(folders.projectDir, 'ingest')}"`.replace(/\/\//g, '');
   const stitchedFile = `"${resolve(folders.projectDir, 'stitched.jpg')}"`.replace(/\/\//g, '');
   const analyzedFile =  `"${resolve(folders.projectDir, 'analyzed.jpg')}"`.replace(/\/\//g, '');
 
-  emitMessage('copyingData');
+  emitMessage('copyingData', {time: timer.next()});
   let res = await connectors.clone.exec(letter, copyDest);
 
   if (res && res[connectors.EXEC_ERROR] === true) {
     return emitMessage('error', ['copy_data', res.stderr]);
   }
 
-  emitMessage('dataCopied');
+  emitMessage('dataCopied', {time: timer.next()});
 
   res = await connectors.stitching.exec(copyDest, stitchedFile, tempDir);
 
