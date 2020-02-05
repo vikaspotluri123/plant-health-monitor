@@ -38,6 +38,7 @@ class IPCManager {
 		console.log(`Backend Response (${name})`, data);
 		switch (name) {
 			case 'navigationComplete':
+				console.log(`Navigation took ${data.time}`);
 				this.setAction('Waiting for SD card to be inserted');
 				states[1].activate();
 				break;
@@ -48,17 +49,20 @@ class IPCManager {
 				this.setConnected(false);
 				break;
 			case 'stichingCompleted':
+				console.log(`Stitching took ${data.time}`);
 				this.setAction('Determining at-risk regions');
 				states[2].stitchedImage = data.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'imageProcessed':
+				console.log(`Analysis took ${data.time}`);
 				this.setAction('Successfully completed run');
 				states[2].highlightImage = data.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'generatedPoints':
-				if (data) {
+				console.log(`Point generation took ${data.time}`);
+				if (data.points) {
 					states[0].plot(data);
 				} else {
 					states[0].handleBadPlot();
