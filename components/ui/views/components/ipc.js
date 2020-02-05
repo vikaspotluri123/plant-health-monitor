@@ -63,7 +63,7 @@ class IPCManager {
 			case 'generatedPoints':
 				console.log(`Point generation took ${data.time}`);
 				if (data.points) {
-					states[0].plot(data);
+					states[0].plot(data.points);
 				} else {
 					states[0].handleBadPlot();
 				}
