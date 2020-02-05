@@ -51,13 +51,13 @@ class IPCManager {
 			case 'stichingCompleted':
 				console.log(`Stitching took ${data.time}`);
 				this.setAction('Determining at-risk regions');
-				states[2].stitchedImage = data.replace(/"/g, '');
+				states[2].stitchedImage = data.image.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'imageProcessed':
 				console.log(`Analysis took ${data.time}`);
 				this.setAction('Successfully completed run');
-				states[2].highlightImage = data.replace(/"/g, '');
+				states[2].highlightImage = data.image.replace(/"/g, '');
 				states[2].activate();
 				break;
 			case 'generatedPoints':

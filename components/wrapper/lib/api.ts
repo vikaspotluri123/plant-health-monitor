@@ -64,7 +64,7 @@ export async function processImages(letter: string) {
     return emitMessage('error', ['copy_data', res.stderr]);
   }
 
-  emitMessage('stichingCompleted', stitchedFile);
+  emitMessage('stichingCompleted', {image: stitchedFile, time: timer.next()});
 
   res = await connectors.analysis.exec(stitchedFile, analyzedFile);
 
@@ -72,7 +72,7 @@ export async function processImages(letter: string) {
     return emitMessage('error', ['copy_data', res.stderr]);
   }
 
-  emitMessage('imageProcessed', analyzedFile);
+  emitMessage('imageProcessed', {image: analyzedFile, time: timer.next()});
 }
 
 export function isConnected() {
