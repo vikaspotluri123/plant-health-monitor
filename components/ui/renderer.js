@@ -20,7 +20,7 @@ ipcMain.on('backend-message', async (_, [action, args]) => {
       return backend.processImages(...args);
     case 'plot':
       const result = await backend.determineWaypoints(...args);
-      win && win.webContents.send('backend-response', ['generatedPoints', result]);
+      result && win && win.webContents.send('backend-response', ['generatedPoints', result]);
       return;
     default:
       win.webContents.send('renderer-error', `Unknown action ${action} for backend`);

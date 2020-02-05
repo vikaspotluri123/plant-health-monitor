@@ -21,8 +21,12 @@ export async function determineWaypoints(a: string, b: string, c: string, d: str
   _resetTimer && timer.reset();
   const response = await connectors.routing.exec(a, b, c, d);
 
+  if (response[connectors.EXEC_ERROR]) {
+    emitMessage('error', ['determine_waypoints', response.stderr]);
+    return null;
+  }
+
   return {
-    [connectors.EXEC_ERROR]: response[connectors.EXEC_ERROR],
     time: timer.next(),
     points: response
   }
@@ -37,19 +41,24 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   console.log('Starting flyover');
   timer.reset();
   // Step 1: determine waypoints
-  let response = await determineWaypoints(a, b, c, d, false);
+  const response = await determineWaypoints(a, b, c, d, false);
 
-  if (response[connectors.EXEC_ERROR] === true) {
-    return emitMessage('error', ['determine_waypoints', response.points.stderr]);
+  if (!response) {
+    return;
   }
 
-  emitMessage('routingCompleted', {time: timer.next()});
+  emitMessage('routingCompleted', response);
   // Step 2: upload waypoints to drone
   // await connectors.analysis.exec('upload');
   // emitMessage('routesUploaded');
   // Step 3: fly baby fly!
   // This will probably be tied to the WiFi library (we're waiting to be reconnected via WiFi)
-  await connectors.navigation.exec();
+  const res2 = await connectors.navigation.exec();
+
+  if (res2 && res2[connectors.EXEC_ERROR] === true) {
+    return emitMessage('error', ['determine_waypoints', res2.stderr]);
+  }
+
   emitMessage('navigationComplete', {time: timer.next()});
 }
 
