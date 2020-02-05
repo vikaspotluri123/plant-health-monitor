@@ -20,7 +20,7 @@ export default abstract class BaseComponentConnector {
 
   abstract command: string;
 
-  async exec(...passthrough: any[]) {
+  async exec(...passthrough: any[]): Promise<EXEC_ERROR_INTERFACE | any> {
     if (this.implemented) {
       const args = this.prepareArguments(...passthrough);
 

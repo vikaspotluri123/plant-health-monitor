@@ -20,7 +20,9 @@ instance.events.on('connection.restored', () => emitMessage('drone.connected'));
 export async function determineWaypoints(a: string, b: string, c: string, d: string, _resetTimer = true) {
   _resetTimer && timer.reset();
   const response = await connectors.routing.exec(a, b, c, d);
+
   return {
+    [connectors.EXEC_ERROR]: response[connectors.EXEC_ERROR],
     time: timer.next(),
     points: response
   }
@@ -35,7 +37,12 @@ export async function flyOver(a: string, b: string, c: string, d: string) {
   console.log('Starting flyover');
   timer.reset();
   // Step 1: determine waypoints
-  await determineWaypoints(a, b, c, d, false);
+  let response = await determineWaypoints(a, b, c, d, false);
+
+  if (response[connectors.EXEC_ERROR] === true) {
+    return emitMessage('error', ['determine_waypoints', response.points.stderr]);
+  }
+
   emitMessage('routingCompleted', {time: timer.next()});
   // Step 2: upload waypoints to drone
   // await connectors.analysis.exec('upload');
