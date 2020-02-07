@@ -66,19 +66,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   std::cout << "Uploading Waypoints..\n";
   uploadWaypoints(vehicle, generatedWaypts, responseTimeout);
 
-  // Waypoint Mission: Start
-  ACK::ErrorCode startAck =
-    vehicle->missionManager->wpMission->start(responseTimeout);
-  if (ACK::getError(startAck))
-  {
-    ACK::getErrorCodeMessage(initAck, __func__);
-  }
-  else
-  {
-    std::cout << "Starting DPHM Mission.\n";
-  }
 
-  
   // Takeoff
   ACK::ErrorCode takeoffAck = vehicle->control->takeoff(responseTimeout);
   if (ACK::getError(takeoffAck))
@@ -98,14 +86,17 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     sleep(15);
   }
 
-  // Start
-  std::cout << "Start waypoint mission" << std::endl;
+
+  // Waypoint Mission: Start
   ACK::ErrorCode startAck =
     vehicle->missionManager->wpMission->start(responseTimeout);
   if (ACK::getError(startAck))
   {
-    ACK::getErrorCodeMessage(startAck, __func__);
-    return false;
+    ACK::getErrorCodeMessage(initAck, __func__);
+  }
+  else
+  {
+    std::cout << "Starting DPHM Mission.\n";
   }
   sleep(20);
 
