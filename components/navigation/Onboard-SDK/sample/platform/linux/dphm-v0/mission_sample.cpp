@@ -93,7 +93,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     vehicle->missionManager->wpMission->start(responseTimeout);
   if (ACK::getError(startAck))
   {
-    ACK::getErrorCodeMessage(initAck, __func__);
+    ACK::getErrorCodeMessage(startAck, __func__);
   }
   else
   {
