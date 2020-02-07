@@ -262,8 +262,8 @@ generateWaypointsPolygon(WayPointSettings* start_data, float64_t increment,
   }
 
   // Come back home
-  start_data->index = num_wp;
-  wp_list.push_back(*start_data);
+  // start_data->index = num_wp;
+  // ewp_list.push_back(*start_data);
 
   return wp_list;
 }
