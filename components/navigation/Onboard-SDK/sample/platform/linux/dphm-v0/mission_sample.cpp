@@ -90,11 +90,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     {
       DSTATUS("Take off command sent failed. Please Land the drone and disarm the motors first.\n");
     }
-
-    if (!vehicle->isM100() && !vehicle->isLegacyM600())
-    {
-      teardownSubscription(vehicle, DEFAULT_PACKAGE_INDEX, responseTimeout);
-    }
+    
     return false;
   }
   else
@@ -103,16 +99,12 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
 
   // Start
-  std::cout << "Start with default rotation rate: 15 deg/s" << std::endl;
+  std::cout << "Start waypoint mission" << std::endl;
   ACK::ErrorCode startAck =
     vehicle->missionManager->wpMission->start(responseTimeout);
   if (ACK::getError(startAck))
   {
     ACK::getErrorCodeMessage(startAck, __func__);
-    if (!vehicle->isM100() && !vehicle->isLegacyM600())
-    {
-      teardownSubscription(vehicle, DEFAULT_PACKAGE_INDEX, responseTimeout);
-    }
     return false;
   }
   sleep(20);
@@ -122,7 +114,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   ACK::ErrorCode stopAck =
     vehicle->missionManager->wpMission->stop(responseTimeout);
 
-  std::cout << "land" << std::endl;
+  std::cout << "Land" << std::endl;
   ACK::ErrorCode landAck = vehicle->control->land(responseTimeout);
   if (ACK::getError(landAck))
   {
