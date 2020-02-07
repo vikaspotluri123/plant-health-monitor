@@ -44,9 +44,9 @@ def validate_distance(h_distance, v_distance):
     '''
     total_distance = (h_distance**2 + v_distance**2)**(0.5)
     difference = abs(total_distance - GRID_UNIT)
-    tolerance = GRID_UNIT*0.15
+    tolerance = GRID_UNIT*0.5
 
-    print(total_distance, difference, tolerance, difference < tolerance)
+    # print(total_distance, difference, tolerance, difference < tolerance)
     return difference < tolerance
 
 class Navigation:
@@ -90,7 +90,7 @@ class Navigation:
                 tempPath.append(Coordinate(mover.latitude / METERS_IN_DEG_LAT, mover.longitude / METERS_IN_DEG_LON))
 
                 if not validate_distance(hsteps1, vsteps1):
-                    sys.exit("ERROR: Distance between coordinates is not within 15%% of expected value")
+                    sys.exit("ERROR: Distance between coordinates is not within 50%% of expected value")
 
                 # fix order if we are on a reverse row
                 if reverse:
