@@ -78,8 +78,61 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     std::cout << "Starting DPHM Mission.\n";
   }
 
-  // The mission isn't done yet, but it doesn't need any
-  // more input from our side.
+  
+  // Takeoff
+  ACK::ErrorCode takeoffAck = vehicle->control->takeoff(responseTimeout);
+  if (ACK::getError(takeoffAck))
+  {
+    ACK::getErrorCodeMessage(takeoffAck, __func__);
+
+    if(takeoffAck.info.cmd_set == OpenProtocolCMD::CMDSet::control
+       && takeoffAck.data == ErrorCode::CommonACK::START_MOTOR_FAIL_MOTOR_STARTED)
+    {
+      DSTATUS("Take off command sent failed. Please Land the drone and disarm the motors first.\n");
+    }
+
+    if (!vehicle->isM100() && !vehicle->isLegacyM600())
+    {
+      teardownSubscription(vehicle, DEFAULT_PACKAGE_INDEX, responseTimeout);
+    }
+    return false;
+  }
+  else
+  {
+    sleep(15);
+  }
+
+  // Start
+  std::cout << "Start with default rotation rate: 15 deg/s" << std::endl;
+  ACK::ErrorCode startAck =
+    vehicle->missionManager->wpMission->start(responseTimeout);
+  if (ACK::getError(startAck))
+  {
+    ACK::getErrorCodeMessage(startAck, __func__);
+    if (!vehicle->isM100() && !vehicle->isLegacyM600())
+    {
+      teardownSubscription(vehicle, DEFAULT_PACKAGE_INDEX, responseTimeout);
+    }
+    return false;
+  }
+  sleep(20);
+
+  // Stop
+  std::cout << "Stop" << std::endl;
+  ACK::ErrorCode stopAck =
+    vehicle->missionManager->wpMission->stop(responseTimeout);
+
+  std::cout << "land" << std::endl;
+  ACK::ErrorCode landAck = vehicle->control->land(responseTimeout);
+  if (ACK::getError(landAck))
+  {
+    ACK::getErrorCodeMessage(landAck, __func__);
+  }
+  else
+  {
+    // No error. Wait for a few seconds to land
+    sleep(10);
+  }
 
   return true;
 }
@@ -178,7 +231,7 @@ generateWaypointsFromFile(WayPointSettings* start_data)
     double longitude = std::stod(lon_str);
     double altitude = std::stod(alt_str);
     double pi = 3.14159265358979323846;
-    
+
     latitude = (latitude / 360) * 2 * pi;
     longitude = (longitude / 360) * 2 * pi;
     
