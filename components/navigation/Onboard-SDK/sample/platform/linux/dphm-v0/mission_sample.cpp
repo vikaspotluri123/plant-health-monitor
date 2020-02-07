@@ -153,7 +153,7 @@ generateWaypointsFromFile(WayPointSettings* start_data)
 
   // Read in waypoints from file
   std::ifstream inFile;
-  inFile.open("/home/......"); // @todo: decide where the waypoints file will be located
+  inFile.open("/home/test_points.txt"); // @todo: decide where the waypoints file will be located
   // waypoints file: each line should be 
   //lat lon alt
   std::string line;
