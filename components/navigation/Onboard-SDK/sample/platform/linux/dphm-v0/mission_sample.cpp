@@ -87,6 +87,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
 
 
+  std::cout << "Starting DPHM Mission.\n";
   // Waypoint Mission: Start
   ACK::ErrorCode startAck =
     vehicle->missionManager->wpMission->start(responseTimeout);
@@ -96,7 +97,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
   else
   {
-    std::cout << "Starting DPHM Mission.\n";
+    std::cout << "Started DPHM Mission.\n";
   }
   sleep(20);
 
