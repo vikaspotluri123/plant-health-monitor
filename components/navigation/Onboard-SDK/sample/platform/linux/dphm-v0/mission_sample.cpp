@@ -174,15 +174,11 @@ generateWaypointsFromFile(WayPointSettings* start_data)
     ss >> lon_str;
     ss >> alt_str;
     
-    double latitude;
-    double longitude;
-    double altitude;
-    
-    latitude = std::stod(lat_str);
-    longitude = std::stod(lon_str);
-    altitude = std::stod(alt_str);
-
+    double latitude = std::stod(lat_str);
+    double longitude = std::stod(lon_str);
+    double altitude = std::stod(alt_str);
     double pi = 3.14159265358979323846;
+    
     latitude = (latitude / 360) * 2 * pi;
     longitude = (longitude / 360) * 2 * pi;
     
