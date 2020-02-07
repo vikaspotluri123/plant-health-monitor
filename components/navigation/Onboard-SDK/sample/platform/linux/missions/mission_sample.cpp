@@ -142,7 +142,7 @@ runWaypointMission(Vehicle* vehicle, uint8_t numWaypoints, int responseTimeout)
     vehicle->missionManager->wpMission->start(responseTimeout);
   if (ACK::getError(startAck))
   {
-    ACK::getErrorCodeMessage(initAck, __func__);
+    ACK::getErrorCodeMessage(startAck, __func__);
   }
   else
   {
