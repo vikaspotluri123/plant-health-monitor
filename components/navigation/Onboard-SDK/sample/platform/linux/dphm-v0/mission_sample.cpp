@@ -83,6 +83,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
   else
   {
+    DSTATUS("Im flying weeeeeeeeeee\n");
     sleep(15);
   }
 
@@ -216,9 +217,9 @@ generateWaypointsFromFile(WayPointSettings* start_data)
     double altitude = std::stod(alt_str);
     double pi = 3.14159265358979323846;
 
-    latitude = (latitude / 360) * 2 * pi;
-    longitude = (longitude / 360) * 2 * pi;
-    
+    //latitude = (latitude / 360) * 2 * pi;
+    //longitude = (longitude / 360) * 2 * pi;
+  
     WayPointSettings wp;
     setWaypointDefaults(&wp);
     wp.index     = i;
