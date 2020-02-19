@@ -58,10 +58,80 @@ def stitch(init_left, init_right):
     ## method for finding matching key points (to be used to identify overlapping region)
     match = cv2.BFMatcher()
     matches = match.knnMatch(des_right, des_left, k=2)
+
+    ## apply ratio test
     good = []
     for m, n in matches:
-        if m.distance < 0.5 *  n.distance:
+        if m.distance < 0.75 *  n.distance:
             good.append(m)
+
+    ## find overlapping region using matches
+    MIN_MATCH_COUNT = 5
+    if len(good) > MIN_MATCH_COUNT:
+
+        # query based off right key
+        src_pts = np.float32([key_right[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+        # train based off of left key
+        dst_pts = np.float32([key_left[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+        # find similarities between right and left (src and dst)
+        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+
+        # give the left image the pixels from the right image (src -> dst)
+        h, w, c = img_right.shape ## add "c" in with h and w if color pics are used
+        pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
+        dst = cv2.perspectiveTransform(pts, M)
+
+        # shows user the overlapping region with a rectangle
+        # img_left = cv2.polylines(img_left, [np.int32(dst)], True, 255, 3, cv2.LINE_AA)
+    else:
+        print("NOT ENOUGH MATCHES AVAILABLE! -", (len(good) / MIN_MATCH_COUNT))
+
+    dst = cv2.warpPerspective(img_right, M, (img_left.shape[1] + img_right.shape[1], img_left.shape[0]))
+    dst[0:img_left.shape[0], 0:img_left.shape[1]] = img_left
+    stitched_img = trim(dst)
+
+    ## return the trimmed composite after stitching the inputs
+    return stitched_img
+
+def stitchFLANN(init_left, init_right):
+    if (_DEBUG_):
+       print("beginnging of stitch")
+    ## read images using opencv library
+    ## img_right/left used for disambiguity
+    img_left = cv2.imread(init_left)
+    img_right = cv2.imread(init_right)
+
+    ## start sifting
+    sift = cv2.xfeatures2d.SIFT_create()
+
+    ## find key points
+    key_right, des_right = sift.detectAndCompute(img_right, None)
+    key_left, des_left = sift.detectAndCompute(img_left, None)
+
+    # FLANN parameters (Fast Library for Approximate Nearest Neighbors)
+    FLANN_INDEX_KDTREE = 0
+    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+    search_params = dict(checks=50)  # or pass empty dictionary
+
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+    matches = flann.knnMatch(des1, des2, k=2)
+
+    # Need to draw only good matches, so create a mask
+    matchesMask = [[0, 0] for i in xrange(len(matches))]
+
+    # ratio test as per Lowe's paper
+    for i, (m, n) in enumerate(matches):
+        if m.distance < 0.7 * n.distance:
+            matchesMask[i] = [1, 0]
+
+    # imshow this if you wanna see the matches
+    # draw_params = dict(matchColor=(0, 255, 0),
+    #                    singlePointColor=(255, 0, 0),
+    #                    matchesMask=matchesMask,
+    #                    flags=0)
+
 
     ## find overlapping region using matches
     MIN_MATCH_COUNT = 5
@@ -180,7 +250,8 @@ def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
-        print("Usage: argv[0] {inputDir} {outFilename} {numRows} {numCols} {tmpDir}", file=sys.stderr)
+        print("\nUsage: \nargv[0] \n{inputDir} \n{outFilename} \n{numRows} \n{numCols} \n{tmpDir}", file=sys.stderr)
+        print("Got " + str(len(sys.argv)) + "args")
         sys.exit(1)
 
     stitching_main(
