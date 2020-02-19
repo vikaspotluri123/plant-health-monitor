@@ -55,29 +55,13 @@ def stitch(init_left, init_right):
     key_right, des_right = sift.detectAndCompute(img_right, None)
     key_left, des_left = sift.detectAndCompute(img_left, None)
 
-    # FLANN parameters (Fast Library for Approximate Nearest Neighbors)
-    FLANN_INDEX_KDTREE = 0
-    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-    search_params = dict(checks=50)  # or pass empty dictionary
-
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-
-    matches = flann.knnMatch(des1, des2, k=2)
-
-    # Need to draw only good matches, so create a mask
-    matchesMask = [[0, 0] for i in xrange(len(matches))]
-
-    # ratio test as per Lowe's paper
-    for i, (m, n) in enumerate(matches):
-        if m.distance < 0.7 * n.distance:
-            matchesMask[i] = [1, 0]
-
-    # imshow this if you wanna see the matches
-    # draw_params = dict(matchColor=(0, 255, 0),
-    #                    singlePointColor=(255, 0, 0),
-    #                    matchesMask=matchesMask,
-    #                    flags=0)
-
+    ## method for finding matching key points (to be used to identify overlapping region)
+    match = cv2.BFMatcher()
+    matches = match.knnMatch(des_right, des_left, k=2)
+    good = []
+    for m, n in matches:
+        if m.distance < 0.5 *  n.distance:
+            good.append(m)
 
     ## find overlapping region using matches
     MIN_MATCH_COUNT = 5
@@ -196,8 +180,7 @@ def stitching_main(inputDir, outFilename, numRows, numCols, tmpDir):
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
-        print("\nUsage: \nargv[0] \n{inputDir} \n{outFilename} \n{numRows} \n{numCols} \n{tmpDir}", file=sys.stderr)
-        print("Got " + str(len(sys.argv)) + "args")
+        print("Usage: argv[0] {inputDir} {outFilename} {numRows} {numCols} {tmpDir}", file=sys.stderr)
         sys.exit(1)
 
     stitching_main(
