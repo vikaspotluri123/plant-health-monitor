@@ -173,15 +173,15 @@ createDPHMWaypoints(DJI::OSDK::Vehicle* vehicle, float32_t start_alt)
   // Create Start Waypoint
   WayPointSettings start_wp;
   setWaypointDefaults(&start_wp);
+
   
-  /*
   // Global position retrieved via broadcast
   Telemetry::GlobalPosition broadcastGPosition;
 
   broadcastGPosition = vehicle->broadcast->getGlobalPosition();
   start_wp.latitude  = broadcastGPosition.latitude;
   start_wp.longitude = broadcastGPosition.longitude;
-  start_wp.altitude  = start_alt;*/
+  start_wp.altitude  = start_alt;
   /*printf("Waypoint created at (LLA): %f \t%f \t%f\n",
           broadcastGPosition.latitude, broadcastGPosition.longitude,
           start_alt);*/
