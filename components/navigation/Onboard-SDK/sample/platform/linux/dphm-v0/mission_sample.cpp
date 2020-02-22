@@ -181,9 +181,9 @@ createDPHMWaypoints(DJI::OSDK::Vehicle* vehicle, float32_t start_alt)
   start_wp.latitude  = broadcastGPosition.latitude;
   start_wp.longitude = broadcastGPosition.longitude;
   start_wp.altitude  = start_alt;
-  printf("Waypoint created at (LLA): %f \t%f \t%f\n",
+  /*printf("Waypoint created at (LLA): %f \t%f \t%f\n",
           broadcastGPosition.latitude, broadcastGPosition.longitude,
-          start_alt);
+          start_alt);*/
 
   std::vector<DJI::OSDK::WayPointSettings> wpVector =
     generateWaypointsFromFile(&start_wp);
