@@ -55,12 +55,9 @@ def stitch(init_left, init_right):
     key_right, des_right = sift.detectAndCompute(img_right, None)
     key_left, des_left = sift.detectAndCompute(img_left, None)
 
-     # FLANN parameters (Fast Library for Approximate Nearest Neighbors)
-    FLANN_INDEX_KDTREE = 0
-    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-    search_params = dict(checks=50)  # or pass empty dictionary
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-    matches = flann.knnMatch(des_right, des_left, k=2)
+     ## method for finding matching key points (to be used to identify overlapping region)
+    match = cv2.BFMatcher()
+    matches = match.knnMatch(des_right, des_left, k=2)
     
     # ratio test
     good = []
