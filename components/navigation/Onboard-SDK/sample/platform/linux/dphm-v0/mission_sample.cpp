@@ -49,7 +49,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   std::cout << "Initializing DPHM Mission..\n";
 
   // Obtain Control Authority
-  ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(functionTimeout);
+  ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(responseTimeout);
   if (ACK::getError(ctrlAck))
   {
     ACK::getErrorCodeMessage(ctrlAck, __func__);
