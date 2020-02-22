@@ -94,7 +94,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
   else
   {
-    std::cout << "Took off. Waiting 15 seconds...\n"
+    std::cout << "Took off. Waiting 15 seconds...\n";
     sleep(15);
   }
 
