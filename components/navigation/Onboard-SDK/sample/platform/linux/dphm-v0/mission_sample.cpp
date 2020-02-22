@@ -198,7 +198,7 @@ generateWaypointsFromFile(WayPointSettings* start_data)
   std::vector<DJI::OSDK::WayPointSettings> wp_list;
 
   // First waypoint
-  start_data->index = 0;
+  start_data->index = (uint8_t) 0;
   wp_list.push_back(*start_data);
 
   // Read in waypoints from file
@@ -207,7 +207,7 @@ generateWaypointsFromFile(WayPointSettings* start_data)
   // waypoints file: each line should be 
   //lat lon alt
   std::string line;
-  int i = 1;
+  uint8_t i = 1;
   
   while(std::getline(inFile, line)) {
     if(line == "") {
@@ -238,6 +238,7 @@ generateWaypointsFromFile(WayPointSettings* start_data)
     wp.latitude  = latitude;
     wp.longitude = longitude;
     wp.altitude  = altitude;
+    wp.toString();
     wp_list.push_back(wp);
 
     i++;
