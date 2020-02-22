@@ -171,9 +171,10 @@ std::vector<DJI::OSDK::WayPointSettings>
 createDPHMWaypoints(DJI::OSDK::Vehicle* vehicle, float32_t start_alt)
 {
   // Create Start Waypoint
-  /*WayPointSettings start_wp;
+  WayPointSettings start_wp;
   setWaypointDefaults(&start_wp);
-
+  
+  /*
   // Global position retrieved via broadcast
   Telemetry::GlobalPosition broadcastGPosition;
 
