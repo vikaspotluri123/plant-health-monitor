@@ -44,10 +44,21 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   WayPointInitSettings fdata;
   setWaypointInitDefaults(&fdata);
 
-  float64_t increment = 0.000001;
-  float32_t start_alt = 10;
+  float32_t start_alt = 20;
 
   std::cout << "Initializing DPHM Mission..\n";
+
+  // Obtain Control Authority
+  ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(functionTimeout);
+  if (ACK::getError(ctrlAck))
+  {
+    ACK::getErrorCodeMessage(ctrlAck, __func__);
+  }
+  else
+  {
+    std::cout << "Obtained drone control authority.\n";
+  }
+
   ACK::ErrorCode initAck = vehicle->missionManager->init(
     DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
   if (ACK::getError(initAck))
@@ -83,6 +94,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   }
   else
   {
+    std::cout << "Took off. Waiting 15 seconds...\n"
     sleep(15);
   }
 
@@ -251,6 +263,6 @@ uploadWaypoints(Vehicle*                                  vehicle,
       vehicle->missionManager->wpMission->uploadIndexData(&(*wp),
                                                           responseTimeout);
 
-    ACK::getErrorCodeMessage(wpDataACK.ack, __func__);
+    printf("Waypoint upload response: %f\n", ACK::getErrorCodeMessage(wpDataACK.ack, __func__));
   }
 }
