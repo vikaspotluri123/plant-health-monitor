@@ -154,6 +154,7 @@ setWaypointDefaults(WayPointSettings* wp)
 void
 setWaypointInitDefaults(WayPointInitSettings* fdata)
 {
+  fdata->indexNumber    = 21;
   fdata->maxVelocity    = 10;
   fdata->idleVelocity   = 5;
   fdata->finishAction   = 0;
@@ -162,8 +163,8 @@ setWaypointInitDefaults(WayPointInitSettings* fdata)
   fdata->traceMode      = 0;
   fdata->RCLostAction   = 1;
   fdata->gimbalPitch    = 0;
-  fdata->latitude       = 0;
-  fdata->longitude      = 0;
+  fdata->latitude       = 0.53436962199939;
+  fdata->longitude      = -1.6627376835400;
   fdata->altitude       = 0;
 }
 
