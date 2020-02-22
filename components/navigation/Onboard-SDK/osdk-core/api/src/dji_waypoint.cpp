@@ -29,6 +29,7 @@
 #include "dji_waypoint.hpp"
 #include "dji_mission_manager.hpp"
 #include "dji_vehicle.hpp"
+#include <iostream>
 
 using namespace DJI;
 using namespace DJI::OSDK;
@@ -438,6 +439,7 @@ WaypointMission::getIndex(size_t pos) const
   return &(index[pos]);
 }*/
 
+// @NOTE: NOT USED
 bool
 WaypointMission::uploadIndexData(WayPointSettings* data,
                                  VehicleCallBack callback, UserData userData)
@@ -473,6 +475,22 @@ WaypointMission::uploadIndexData(WayPointSettings* data,
 ACK::WayPointIndex
 WaypointMission::uploadIndexData(WayPointSettings* data, int timeout)
 {
+  /* std::cout << "Waypoint Settings: " << '\n';
+  std::cout << "\tindex: " << unsigned(data->index) << '\n';
+  std::cout << "\tlatitude: " << data->latitude << '\n';
+  std::cout << "\tlongitude: " << data->longitude << '\n';
+  std::cout << "\taltitude: " << data->altitude << '\n';
+  std::cout << "\tdamping: " << data->damping << '\n';
+  std::cout << "\tyaw: " << data->yaw << '\n';
+  std::cout << "\tgimbalPitch: " << data->gimbalPitch << '\n';
+  std::cout << "\tturnMode: " << unsigned(data->turnMode) << '\n';
+  std::cout << "\thasAction: " << unsigned(data->hasAction) << '\n';
+  std::cout << "\tactionTimeLimit: " << data->actionTimeLimit << '\n';
+  std::cout << "\tactionNumber: " << unsigned(data->actionNumber) << '\n';
+  std::cout << "\tactionRepeat: " << unsigned(data->actionRepeat) << '\n';
+  std::cout << "\tcommandList: " << unsigned(data->commandList) << '\n';
+  std::cout << "\tcommandParameter: " << data->commandParameter << '\n'; */
+
   WayPointSettings   wpData;
   ACK::WayPointIndex ack;
 

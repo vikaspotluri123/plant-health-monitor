@@ -89,7 +89,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     {
       DSTATUS("Take off command sent failed. Please Land the drone and disarm the motors first.\n");
     }
-    
+
     return false;
   }
   else
@@ -111,7 +111,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   {
     std::cout << "Started DPHM Mission.\n";
   }
-  sleep(20);
+  sleep(2000);
 
   // Stop
   std::cout << "Stop" << std::endl;
@@ -154,7 +154,7 @@ setWaypointDefaults(WayPointSettings* wp)
 void
 setWaypointInitDefaults(WayPointInitSettings* fdata)
 {
-  fdata->indexNumber    = 21;
+  fdata->indexNumber    = 20;
   fdata->maxVelocity    = 10;
   fdata->idleVelocity   = 5;
   fdata->finishAction   = 0;
@@ -175,7 +175,7 @@ createDPHMWaypoints(DJI::OSDK::Vehicle* vehicle, float32_t start_alt)
   WayPointSettings start_wp;
   setWaypointDefaults(&start_wp);
 
-  
+
   // Global position retrieved via broadcast
   Telemetry::GlobalPosition broadcastGPosition;
 
@@ -200,31 +200,31 @@ generateWaypointsFromFile(WayPointSettings* start_data)
 
   // First waypoint
   start_data->index = (uint8_t) 0;
-  wp_list.push_back(*start_data);
+  // wp_list.push_back(*start_data);
 
   // Read in waypoints from file
   std::ifstream inFile;
   inFile.open("/home/test_points.txt"); // @todo: decide where the waypoints file will be located
-  // waypoints file: each line should be 
+  // waypoints file: each line should be
   //lat lon alt
   std::string line;
-  uint8_t i = 1;
-  
+  uint8_t i = 0;
+
   while(std::getline(inFile, line)) {
     if(line == "") {
       break;
     }
 
     std::istringstream ss(line);
-    
+
     std::string lat_str;
     std::string lon_str;
     std::string alt_str;
-    
+
     ss >> lat_str;
     ss >> lon_str;
     ss >> alt_str;
-    
+
     double latitude = std::stod(lat_str);
     double longitude = std::stod(lon_str);
     double altitude = std::stod(alt_str);
@@ -232,14 +232,14 @@ generateWaypointsFromFile(WayPointSettings* start_data)
 
     latitude = (latitude / 360) * 2 * pi;
     longitude = (longitude / 360) * 2 * pi;
-    
+
     WayPointSettings wp;
     setWaypointDefaults(&wp);
     wp.index     = i;
     wp.latitude  = latitude;
     wp.longitude = longitude;
     wp.altitude  = altitude;
-    wp.toString();
+    // wp.toString();
     wp_list.push_back(wp);
 
     i++;
@@ -266,6 +266,6 @@ uploadWaypoints(Vehicle*                                  vehicle,
       vehicle->missionManager->wpMission->uploadIndexData(&(*wp),
                                                           responseTimeout);
 
-    printf("Waypoint upload response: %f\n", ACK::getErrorCodeMessage(wpDataACK.ack, __func__));
+    ACK::getErrorCodeMessage(wpDataACK.ack, __func__);
   }
 }

@@ -97,8 +97,8 @@ typedef struct WayPointInitSettings
   /*!< 2: controlled by RC <br>*/
   /*!< 3: use waypoint's yaw(tgt_yaw) */
   uint8_t traceMode; /*!< Trace mode <br>*/
-  /*!< 0: point to point, after reaching the target waypoint hover, 
-   * complete waypoints action (if any), 
+  /*!< 0: point to point, after reaching the target waypoint hover,
+   * complete waypoints action (if any),
    * then fly to the next waypoint <br>
    * 1: Coordinated turn mode, smooth transition between waypoints,
    * no waypoints task <br>
@@ -113,7 +113,6 @@ typedef struct WayPointInitSettings
   float64_t longitude;    /*!< Focus longitude (radian) */
   float32_t altitude;     /*!< Focus altitude (relative takeoff point height) */
   uint8_t   reserved[16]; /*!< Reserved, must be set to 0 */
-
 } WayPointInitSettings; // pack(1)
 
 /**
