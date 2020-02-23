@@ -1811,6 +1811,8 @@ Vehicle::ACKHandler(void* eventData)
 void
 Vehicle::PushDataHandler(void* eventData)
 {
+  std::cout << "--------------------PUSHDATAHANDLER--------------------" << '\n';
+
   RecvContainer* pushDataEntry = (RecvContainer*)eventData;
 
   const uint8_t cmd[] = { pushDataEntry->recvInfo.cmd_set,
