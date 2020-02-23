@@ -29,6 +29,7 @@
 
 #include "dji_vehicle.hpp"
 #include <new>
+#include <iostream>
 
 using namespace DJI;
 using namespace DJI::OSDK;
@@ -2021,6 +2022,7 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission,
                   sizeof(cmd)) == 0)
   {
+    std::cout << "You on a mission manager brutha" << '\n';
     if (missionManager)
     {
       if (missionCallback.callback)
