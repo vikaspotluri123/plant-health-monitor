@@ -1820,7 +1820,7 @@ Vehicle::PushDataHandler(void* eventData)
       0)
   {
     std::cout << "--------------------broadcast:broadcast--------------------" << '\n';
-    std::cout << pushDataEntry->recvData->wpIndexACK->data->index << '\n';
+    std::cout << pushDataEntry->recvData.wpIndexACK.data.index << '\n';
     if (broadcast)
     {
       if (broadcast->unpackHandler.callback)
