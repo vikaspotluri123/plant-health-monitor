@@ -53,8 +53,6 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   float32_t start_alt = 12;
 
   std::cout << "Initializing DPHM Mission..\n";
-  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
-  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
 
   // Obtain Control Authority
   ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(responseTimeout);
@@ -69,6 +67,8 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     ACK::getErrorCodeMessage(initAck, __func__);
   }
 
+  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
+  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
   vehicle->missionManager->printInfo();
 
   // Waypoint Mission: Create Waypoints
@@ -105,16 +105,16 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
 
   std::cout << "Starting DPHM Mission.\n";
   // Waypoint Mission: Start
-  ACK::ErrorCode startAck =
-    vehicle->missionManager->wpMission->start(responseTimeout);
-  if (ACK::getError(startAck))
+  /* ACK::ErrorCode startAck =  */ vehicle->missionManager->wpMission->start(
+    &onWayPoint);
+  /* if (ACK::getError(startAck))
   {
     ACK::getErrorCodeMessage(startAck, __func__);
   }
   else
   {
     std::cout << "Started DPHM Mission.\n";
-  }
+  } */
   sleep(2000);
 
   // Stop
