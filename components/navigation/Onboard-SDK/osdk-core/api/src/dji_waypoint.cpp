@@ -41,7 +41,8 @@ WaypointMission::WaypointMission(Vehicle* vehicle)
   , waypointV2Interface(vehicle)
 #endif
 {
-  wayPointEventCallback.callback = 0;
+  wayPointEventCallback.callback = [](Vehicle* vehicle, RecvContainer recvFrame,
+                                UserData userData) { std::cout << "WAYPOINT!\n"; };
   wayPointEventCallback.userData = 0;
   wayPointCallback.callback      = 0;
   wayPointCallback.userData      = 0;
