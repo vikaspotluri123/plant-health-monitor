@@ -29,6 +29,7 @@
 
 #include "dji_vehicle.hpp"
 #include <new>
+#include <iostream>
 
 using namespace DJI;
 using namespace DJI::OSDK;
@@ -2018,9 +2019,10 @@ Vehicle::PushDataHandler(void* eventData)
       }
     }
   }
-  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission,
-                  sizeof(cmd)) == 0)
+
+if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission, sizeof(cmd)) == 0)
   {
+    std::cout << "MISSION" << '\n';
     if (missionManager)
     {
       if (missionCallback.callback)
@@ -2076,6 +2078,7 @@ Vehicle::PushDataHandler(void* eventData)
   if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::waypoint,
                   sizeof(cmd)) == 0)
   {
+    std::cout << "WAYPOINT" << '\n';
     if (missionManager->wpMission)
     {
       //! @todo add waypoint session decode
