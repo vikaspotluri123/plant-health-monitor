@@ -2073,7 +2073,7 @@ Vehicle::PushDataHandler(void* eventData)
       }
     }
   }
-  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::waypoint,
+  if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::waypoint,
                   sizeof(cmd)) == 0)
   {
     if (missionManager->wpMission)
