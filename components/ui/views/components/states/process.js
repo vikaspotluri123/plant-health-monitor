@@ -7,7 +7,7 @@ module.exports = class ProcessingState extends State {
 	}
 
 	set busy(value) {
-		this.btn.disabled = value;
+		this.btn?.disabled = value;
 		this.drive.disabled = value;
 		this._busy = value;
 	}
