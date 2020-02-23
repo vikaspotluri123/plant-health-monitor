@@ -1820,6 +1820,7 @@ Vehicle::PushDataHandler(void* eventData)
       0)
   {
     std::cout << "--------------------broadcast:broadcast--------------------" << '\n';
+    std::cout << pushDataEntry << '\n';
     if (broadcast)
     {
       if (broadcast->unpackHandler.callback)
@@ -1832,7 +1833,6 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::subscribe,
                   sizeof(cmd)) == 0)
   {
-    std::cout << "--------------------broadcast:subscribe--------------------" << '\n';
     if (subscribe)
     {
       DDEBUG("Decode callback subscribe");
@@ -1985,7 +1985,6 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::fromPayload,
                   sizeof(cmd)) == 0)
   {
-    std::cout << "--------------------broadcast:fromPayload--------------------" << '\n';
     if (payloadDevice) {
       if (payloadDevice->fromPSDKHandler.callback) {
         if (threadSupported) {
@@ -2025,7 +2024,6 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission,
                   sizeof(cmd)) == 0)
   {
-    std::cout << "You on a mission manager brutha" << '\n';
     if (missionManager)
     {
       if (missionCallback.callback)
@@ -2081,7 +2079,6 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::waypoint,
                   sizeof(cmd)) == 0)
   {
-    std::cout << "You on a waypoint brutha" << '\n';
     if (missionManager->wpMission)
     {
       //! @todo add waypoint session decode
