@@ -56,23 +56,21 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
 
   // Obtain Control Authority
   ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(responseTimeout);
-  if (ACK::getError(ctrlAck))
-  {
+  if (ACK::getError(ctrlAck)) {
     ACK::getErrorCodeMessage(ctrlAck, __func__);
-  }
-  else
-  {
+  } else {
     std::cout << "Obtained drone control authority.\n";
   }
 
-  ACK::ErrorCode initAck = vehicle->missionManager->init(
-    DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
-  if (ACK::getError(initAck))
-  {
+  ACK::ErrorCode initAck = vehicle->missionManager->init(DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
+  if (ACK::getError(initAck)) {
     ACK::getErrorCodeMessage(initAck, __func__);
   }
 
   vehicle->missionManager->printInfo();
+  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
+  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
+  // vehicle->missionManager->missionCallback(&onWayPoint, nullptr, nullptr);
 
   // Waypoint Mission: Create Waypoints
   std::cout << "Creating Waypoints..\n";
@@ -83,8 +81,6 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   std::cout << "Uploading Waypoints..\n";
   uploadWaypoints(vehicle, generatedWaypts, responseTimeout);
 
-  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
-  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
 
 
   // Takeoff
