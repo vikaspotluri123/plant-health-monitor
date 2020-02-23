@@ -7,7 +7,7 @@ import sys
 from numpy import arange
 
 # configuration for distance between pictures in meters
-GRID_UNIT = 40
+GRID_UNIT = 10
 
 # configuration for overage margin on edge of path
 MARGIN = 200
