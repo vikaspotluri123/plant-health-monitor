@@ -48,16 +48,16 @@ def stitch(init_left, init_right):
     img_left = cv2.imread(init_left)
     img_right = cv2.imread(init_right)
 
-    ## start sifting
-    sift = cv2.xfeatures2d.SIFT_create()
+    ## start surfing (Speeded-Up Robust Features)
+    surf = cv2.xfeatures2d_SURF.create(1000)
 
     ## find key points
     key_right, des_right = sift.detectAndCompute(img_right, None)
     key_left, des_left = sift.detectAndCompute(img_left, None)
 
      ## method for finding matching key points (to be used to identify overlapping region)
-    match = cv2.BFMatcher()
-    matches = match.knnMatch(des_right, des_left, k=2)
+    match = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
+    matches = match.knnMatch(des_right, des_left, 2)
     
     # ratio test
     good = []
