@@ -29,7 +29,6 @@
 
 #include "dji_vehicle.hpp"
 #include <new>
-#include <iostream>
 
 using namespace DJI;
 using namespace DJI::OSDK;
@@ -1819,8 +1818,6 @@ Vehicle::PushDataHandler(void* eventData)
   if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::broadcast, sizeof(cmd)) ==
       0)
   {
-    std::cout << "--------------------broadcast:broadcast--------------------" << '\n';
-    std::cout << unsigned(pushDataEntry->recvData.wpIndexACK.data.index) << '\n';
     if (broadcast)
     {
       if (broadcast->unpackHandler.callback)
