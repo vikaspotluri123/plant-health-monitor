@@ -84,6 +84,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   uploadWaypoints(vehicle, generatedWaypts, responseTimeout);
 
   vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
+  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
 
 
   // Takeoff
