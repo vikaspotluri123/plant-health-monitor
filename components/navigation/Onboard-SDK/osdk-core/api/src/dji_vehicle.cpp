@@ -1811,8 +1811,6 @@ Vehicle::ACKHandler(void* eventData)
 void
 Vehicle::PushDataHandler(void* eventData)
 {
-  std::cout << "--------------------PUSHDATAHANDLER--------------------" << '\n';
-
   RecvContainer* pushDataEntry = (RecvContainer*)eventData;
 
   const uint8_t cmd[] = { pushDataEntry->recvInfo.cmd_set,
@@ -1821,6 +1819,7 @@ Vehicle::PushDataHandler(void* eventData)
   if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::broadcast, sizeof(cmd)) ==
       0)
   {
+    std::cout << "--------------------broadcast:broadcast--------------------" << '\n';
     if (broadcast)
     {
       if (broadcast->unpackHandler.callback)
@@ -1833,6 +1832,7 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::subscribe,
                   sizeof(cmd)) == 0)
   {
+    std::cout << "--------------------broadcast:subscribe--------------------" << '\n';
     if (subscribe)
     {
       DDEBUG("Decode callback subscribe");
@@ -1985,6 +1985,7 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::fromPayload,
                   sizeof(cmd)) == 0)
   {
+    std::cout << "--------------------broadcast:fromPayload--------------------" << '\n';
     if (payloadDevice) {
       if (payloadDevice->fromPSDKHandler.callback) {
         if (threadSupported) {
