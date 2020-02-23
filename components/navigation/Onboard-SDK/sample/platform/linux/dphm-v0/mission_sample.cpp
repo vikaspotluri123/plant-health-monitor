@@ -30,12 +30,18 @@
  *
  */
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <dji_open_protocol.hpp>
 #include "mission_sample.hpp"
 
 using namespace DJI::OSDK;
 using namespace DJI::OSDK::Telemetry;
+
+void onWayPoint(Vehicle* vehicle, RecvContainer recvFrame, UserData userData) {
+  std::cout << "onWayPoint called" << '\n';
+}
 
 bool
 runDPHMMission(Vehicle* vehicle, int responseTimeout)
@@ -76,6 +82,8 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   // Waypoint Mission: Upload the waypoints
   std::cout << "Uploading Waypoints..\n";
   uploadWaypoints(vehicle, generatedWaypts, responseTimeout);
+
+  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
 
 
   // Takeoff
