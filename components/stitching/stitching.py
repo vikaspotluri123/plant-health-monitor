@@ -49,7 +49,7 @@ def stitch(init_left, init_right):
     img_right = cv2.imread(init_right)
 
     ## start surfing (Speeded-Up Robust Features)
-    surf = cv2.xfeatures2d_SURF.create(1000)
+    surf = cv2.xfeatures2d_SURF.create(3000)
 
     ## find key points
     key_right, des_right = sift.detectAndCompute(img_right, None)
