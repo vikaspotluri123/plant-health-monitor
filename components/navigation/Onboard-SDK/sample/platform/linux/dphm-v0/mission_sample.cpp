@@ -44,7 +44,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   WayPointInitSettings fdata;
   setWaypointInitDefaults(&fdata);
 
-  float32_t start_alt = 20;
+  float32_t start_alt = 12;
 
   std::cout << "Initializing DPHM Mission..\n";
 
@@ -154,14 +154,14 @@ setWaypointDefaults(WayPointSettings* wp)
 void
 setWaypointInitDefaults(WayPointInitSettings* fdata)
 {
-  fdata->indexNumber    = 20;
-  fdata->maxVelocity    = 10;
-  fdata->idleVelocity   = 5;
+  fdata->indexNumber    = 3;
+  fdata->maxVelocity    = 2;
+  fdata->idleVelocity   = 1;
   fdata->finishAction   = 0;
   fdata->executiveTimes = 1;
-  fdata->yawMode        = 0;
+  fdata->yawMode        = 1;
   fdata->traceMode      = 0;
-  fdata->RCLostAction   = 1;
+  fdata->RCLostAction   = 0;
   fdata->gimbalPitch    = 0;
   fdata->latitude       = 0.53436962199939;
   fdata->longitude      = -1.6627376835400;
