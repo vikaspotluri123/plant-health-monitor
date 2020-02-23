@@ -39,6 +39,7 @@
 #include <dji_linux_helpers.hpp>
 
 bool pwmOutputBlockingApiDemo(DJI::OSDK::Vehicle* vehicle);
+bool DPHMpwmOutputBlockingApiDemo(DJI::OSDK::Vehicle* vehicle);
 bool pwmOutputNonBlockingApiDemo(DJI::OSDK::Vehicle* vehicle);
 bool gpioLoopbackBlockingApiDemo(DJI::OSDK::Vehicle* vehicle);
 bool gpioLoopbackNonBlockingApiDemo(DJI::OSDK::Vehicle* vehicle);

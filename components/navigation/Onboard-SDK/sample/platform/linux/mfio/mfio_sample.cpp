@@ -73,6 +73,40 @@ pwmOutputBlockingApiDemo(Vehicle* vehicle)
 }
 
 bool
+DPHMpwmOutputBlockingApiDemo(Vehicle* vehicle)
+{
+
+  int responseTimeout = 1;
+
+  // Set SDK4 to output PWM at 50Hz
+  // Parameters: initialValue - duty cycle
+  //             freq - PWM freq
+  uint32_t initOnTimeUs = 1000; // us
+  uint16_t pwmFreq      = 1;    // Hz
+
+  // Setup the channel 4
+  std::cout << "Configuring channel\n";
+  vehicle->mfio->config(MFIO::MODE_PWM_OUT, MFIO::CHANNEL_3, initOnTimeUs,
+                        pwmFreq, responseTimeout);
+  std::cout << "Channel 4 configured to output 50Hz PWM with 50% duty cycle.\n";
+  sleep(1);
+
+  // After 1s, change the duty cycle from 1ms to 2ms
+
+  std::cout << "Setting 2ms pulse\n";
+  initOnTimeUs = 2000; // us, 30% duty cycle
+  vehicle->mfio->setValue(MFIO::CHANNEL_3, initOnTimeUs, responseTimeout);
+  sleep(1);
+
+  std::cout << "Turning off the PWM signal\n";
+  uint32_t digitalValue = 0;
+  uint16_t digitalFreq  = 0;
+  vehicle->mfio->config(MFIO::MODE_GPIO_OUT, MFIO::CHANNEL_3, digitalValue,
+                        digitalFreq, responseTimeout);
+  return true;
+}
+
+bool
 pwmOutputNonBlockingApiDemo(Vehicle* vehicle)
 {
   // Set SDK4 to output PWM at 50Hz

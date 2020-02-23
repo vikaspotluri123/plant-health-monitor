@@ -82,6 +82,9 @@ main(int argc, char** argv)
   std::cout
     << "| [f] Set ADC (non-blocking)                                     |"
     << std::endl;
+  std::cout
+    << "| [z] Set DPHM PWM output (block api)                            |"
+    << std::endl;
 
   char inputChar;
   std::cin >> inputChar;
@@ -105,6 +108,9 @@ main(int argc, char** argv)
       break;
     case 'f':
       adcNonBlockingApiDemo(vehicle);
+      break;
+    case 'z':
+      DPHMpwmOutputBlockingApiDemo(vehicle);
       break;
     default:
       break;
