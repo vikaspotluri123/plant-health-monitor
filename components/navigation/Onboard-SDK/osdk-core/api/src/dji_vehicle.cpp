@@ -2078,6 +2078,7 @@ Vehicle::PushDataHandler(void* eventData)
   else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::waypoint,
                   sizeof(cmd)) == 0)
   {
+    std::cout << "You on a waypoint brutha" << '\n';
     if (missionManager->wpMission)
     {
       //! @todo add waypoint session decode
