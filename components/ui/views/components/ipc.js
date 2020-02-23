@@ -6,6 +6,13 @@ const ACTION_MESSAGES = {
 	'imageProcessed': 'Successfully completed run',
 };
 
+const ERROR_MAP = {
+	'determine_waypoints': 'Failed determining waypoints',
+	'copy_data': 'Failed copying files from SD card',
+	'run_stitching': 'Failed stitching images',
+	'run_analysis': 'Failed running analysis'
+};
+
 class IPCManager {
 	constructor() {
 		this._ipc = null;
@@ -34,9 +41,26 @@ class IPCManager {
 		this.ipc.send('backend-message', payload);
 	}
 
-	_processResponse(_, [name, data]) {
+	async _processResponse(_, [name, data]) {
 		console.log(`Backend Response (${name})`, data);
 		switch (name) {
+			case 'error':
+				const {dialog} = require('electron').remote;
+				console.log('got error', data);
+				for (const state of states) {
+					state.reset();
+				}
+
+				let title, message;
+
+				if (ERROR_MAP[data[0]]) {
+					title = message = ERROR_MAP[data[0]];
+					message += `\n${data[1]}`;
+				}
+
+				await dialog.showErrorBox(null, {title, messsage});
+
+				break;
 			case 'navigationComplete':
 				console.log(`Navigation took ${data.time}`);
 				this.setAction('Waiting for SD card to be inserted');

@@ -82,7 +82,7 @@ export async function processImages(letter: string) {
   res = await connectors.stitching.exec(copyDest, stitchedFile, tempDir);
 
   if (res && res[connectors.EXEC_ERROR] === true) {
-    return emitMessage('error', ['copy_data', res.stderr]);
+    return emitMessage('error', ['run_stitching', res.stderr]);
   }
 
   emitMessage('stichingCompleted', {image: stitchedFile, time: timer.next()});
@@ -90,7 +90,7 @@ export async function processImages(letter: string) {
   res = await connectors.analysis.exec(stitchedFile, analyzedFile);
 
   if (res && res[connectors.EXEC_ERROR] === true) {
-    return emitMessage('error', ['copy_data', res.stderr]);
+    return emitMessage('error', ['run_analysis', res.stderr]);
   }
 
   emitMessage('imageProcessed', {image: analyzedFile, time: timer.next()});
