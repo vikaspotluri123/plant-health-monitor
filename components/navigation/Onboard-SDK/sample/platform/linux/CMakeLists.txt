@@ -48,7 +48,6 @@ endif()
 #add_subdirectory(payloads)
 
 add_subdirectory(dphm-v0)
-add_subdirectory(dphm-v1)
 
 if(ADVANCED_SENSING)
     add_definitions(-DADVANCED_SENSING)
