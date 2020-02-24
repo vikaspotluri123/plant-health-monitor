@@ -207,10 +207,8 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->actionRepeat    = 3;
   wp->commandList[0] = 0;
   wp->commandParameter[0] = 1000;
-  wp->commandList[1] = {
-    OpenProtocolCMD::CMDSet::broadcast, 0x04
-  };
-  wp->commandParameter[1] = 1;
+  wp->commandList[1] = OpenProtocolCMD::CMDSet::broadcast;
+  wp->commandParameter[1] = 0x04;
   wp->commandList[2] = 0;
   wp->commandParameter[2] = 1000;
   for (int i = 3; i < 16; ++i)
