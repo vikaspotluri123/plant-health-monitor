@@ -116,7 +116,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
 
   // Counters
   int elapsedTimeInMs = 0;
-  int timeToPrintInMs = 20000;
+  int timeToPrintInMs = 60000;
 
   // We will listen to five broadcast data sets:
   // 1. Flight Status
@@ -166,8 +166,8 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
               << quaternion.q3 << "\n";
     std::cout << "-------\n\n";
 
-    usleep(5000);
-    elapsedTimeInMs += 5;
+    usleep(500000);
+    elapsedTimeInMs += 500;
   }
 
   std::cout << "Done printing!\n";
