@@ -40,7 +40,9 @@ using namespace DJI::OSDK;
 using namespace DJI::OSDK::Telemetry;
 
 void onWayPoint(Vehicle* vehicle, RecvContainer recvFrame, UserData userData) {
-  std::cout << "onWayPoint called" << '\n';
+  std::cout << "\tWaypoint Index:" << (unsigned)recvFrame.recvData.wayPointReachedData.waypoint_index << '\n';
+  std::cout << "\tIncident Type:" << (unsigned)recvFrame.recvData.wayPointReachedData.incident_type << '\n';
+  std::cout << "\tCurrent Status:" << (unsigned)recvFrame.recvData.wayPointReachedData.current_status << '\n';
 }
 
 bool
@@ -203,15 +205,11 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->turnMode        = 0;
   wp->hasAction       = 1;
   wp->actionTimeLimit = 10000;
-  wp->actionNumber    = 3;
-  wp->actionRepeat    = 3;
+  wp->actionNumber    = 1;
+  wp->actionRepeat    = 1;
   wp->commandList[0] = 0;
   wp->commandParameter[0] = 1000;
-  wp->commandList[1] = 0x04;
-  wp->commandParameter[1] = 0;
-  wp->commandList[2] = 0;
-  wp->commandParameter[2] = 1000;
-  for (int i = 3; i < 16; ++i)
+  for (int i = 1; i < 16; ++i)
   {
     wp->commandList[i]      = 0;
     wp->commandParameter[i] = 0;
