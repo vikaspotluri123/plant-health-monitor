@@ -138,9 +138,6 @@ moveByPositionOffset(
 
   // Get data
 
-  // Global position retrieved via subscription
-  Telemetry::TypeMap<TOPIC_GPS_FUSED>::type currentSubscriptionGPS;
-  Telemetry::TypeMap<TOPIC_GPS_FUSED>::type originSubscriptionGPS;
   // Global position retrieved via broadcast
   Telemetry::GlobalPosition currentBroadcastGP;
   Telemetry::GlobalPosition originBroadcastGP;
@@ -273,19 +270,8 @@ moveByPositionOffset(
   //! Set velocity to zero, to prevent any residual velocity from position
   //! command
 
-  if (elapsedTimeInMs >= timeoutInMilSec)
-  {
+  if (elapsedTimeInMs >= timeoutInMilSec) {
     std::cout << "Task timeout!\n";
-    if (!vehicle->isM100() && !vehicle->isLegacyM600())
-    {
-      ACK::ErrorCode ack =
-        vehicle->subscribe->removePackage(pkgIndex, responseTimeout);
-      if (ACK::getError(ack))
-      {
-        std::cout << "Error unsubscribing; please restart the drone/FC to get "
-                     "back to a clean state.\n";
-      }
-    }
     return ACK::FAIL;
   }
 
@@ -305,8 +291,7 @@ bool monitoredLanding(Vehicle* vehicle, int timeout) {
 
   // Start landing
   ACK::ErrorCode landingStatus = vehicle->control->land(timeout);
-  if (ACK::getError(landingStatus) != ACK::SUCCESS)
-  {
+  if (ACK::getError(landingStatus) != ACK::SUCCESS) {
     ACK::getErrorCodeMessage(landingStatus, func);
     return false;
   }
@@ -323,13 +308,10 @@ bool monitoredLanding(Vehicle* vehicle, int timeout) {
     usleep(100000);
   }
 
-  if (landingNotStarted == timeoutCycles)
-  {
+  if (landingNotStarted == timeoutCycles) {
     std::cout << "Landing failed. Aircraft is still in the air." << std::endl;
     return false;
-  }
-  else
-  {
+  } else  {
     std::cout << "Landing...\n";
   }
 
@@ -345,9 +327,7 @@ bool monitoredLanding(Vehicle* vehicle, int timeout) {
   } while (gp.altitude != 0);
 
   if (gp.altitude != 0) {
-    std::cout
-      << "Landing finished, but the aircraft is in an unexpected mode. "
-          "Please connect DJI GO.\n";
+    std::cout << "Landing finished, but the aircraft is in an unexpected mode.\n";
     return false;
   } else {
     std::cout << "Successful landing!\n";
@@ -362,12 +342,12 @@ bool monitoredLanding(Vehicle* vehicle, int timeout) {
 /coordinates.
     Accurate when distances are small.
 !*/
-void
-localOffsetFromGpsOffset(Vehicle* vehicle, Telemetry::Vector3f& deltaNed,
-                         void* target, void* origin)
-{
-  Telemetry::GPSFused*       subscriptionTarget;
-  Telemetry::GPSFused*       subscriptionOrigin;
+void localOffsetFromGpsOffset(
+  Vehicle* vehicle,
+  Telemetry::Vector3f& deltaNed,
+  void* target,
+  void* origin
+) {
   Telemetry::GlobalPosition* broadcastTarget;
   Telemetry::GlobalPosition* broadcastOrigin;
   double                     deltaLon;
