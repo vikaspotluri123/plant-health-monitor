@@ -29,7 +29,6 @@
 
 #include "dji_vehicle.hpp"
 #include <new>
-#include <iostream>
 
 using namespace DJI;
 using namespace DJI::OSDK;
@@ -1828,9 +1827,199 @@ Vehicle::PushDataHandler(void* eventData)
       }
     }
   }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::subscribe,
+                  sizeof(cmd)) == 0)
+  {
+    if (subscribe)
+    {
+      DDEBUG("Decode callback subscribe");
+      if (subscribe->subscriptionDataDecodeHandler.callback)
+      {
+        subscribe->subscriptionDataDecodeHandler.callback(
+          this, *(pushDataEntry),
+          subscribe->subscriptionDataDecodeHandler.userData);
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsNMEAGPSGSA,
+                  sizeof(cmd)) == 0
+           || memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsNMEAGPSRMC,
+                     sizeof(cmd)) == 0
+           || memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsNMEARTKGSA,
+                     sizeof(cmd)) == 0
+           || memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsNMEARTKRMC,
+                     sizeof(cmd)) == 0)
+  {
+    if(hardSync)
+    {
+      if(hardSync->ppsNMEAHandler.callback)
+      {
+        hardSync->ppsNMEAHandler.callback(
+          this, *(pushDataEntry),
+          hardSync->ppsNMEAHandler.userData);
+      }
+      else  // If user listen to it already, we don't store them.
+      {
+        hardSync->writeData(cmd[1], pushDataEntry);
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsUTCTime,
+                  sizeof(cmd)) == 0)
+  {
+    if(hardSync)
+    {
+      if(hardSync->ppsUTCTimeHandler.callback)
+      {
+        hardSync->ppsUTCTimeHandler.callback(
+          this, *(pushDataEntry),
+          hardSync->ppsUTCTimeHandler.userData);
+      }
+      else  // If user listen to it already, we don't store them.
+      {
+        hardSync->writeData(cmd[1], pushDataEntry);
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsUTCFCTimeRef,
+                  sizeof(cmd)) == 0)
+  {
+    if(hardSync)
+    {
+      if(hardSync->ppsUTCFCTimeHandler.callback)
+      {
+        hardSync->ppsUTCFCTimeHandler.callback(
+          this, *(pushDataEntry),
+          hardSync->ppsUTCFCTimeHandler.userData);
+      }
+      else  // If user listen to it already, we don't store them.
+      {
+        hardSync->writeData(cmd[1], pushDataEntry);
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::HardwareSync::ppsSource,
+                  sizeof(cmd)) == 0)
+  {
+    if(hardSync)
+    {
+      if(hardSync->ppsSourceHandler.callback)
+      {
+        hardSync->ppsSourceHandler.callback(
+          this, *(pushDataEntry),
+          hardSync->ppsSourceHandler.userData);
+      }
+      else  // If user listen to it already, we don't store them.
+      {
+        hardSync->writeData(cmd[1], pushDataEntry);
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::fromMobile,
+                  sizeof(cmd)) == 0)
+  {
+    if (moc)
+    {
+      if (moc->fromMSDKHandler.callback)
+      {
+        if(threadSupported)
+        {
+          DDEBUG("Received data from mobile\n");
+          protocolLayer->getThreadHandle()->lockNonBlockCBAck();
+          this->circularBuffer->cbPush(
+              this->circularBuffer, moc->fromMSDKHandler,
+              *pushDataEntry);
+          protocolLayer->getThreadHandle()->freeNonBlockCBAck();
+        }
+        else
+        {
+          moc->fromMSDKHandler.callback(this, *(pushDataEntry),moc->fromMSDKHandler.userData);
+        }
+      }
+    }
 
-  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission, sizeof(cmd)) == 
-      0)
+    if (mobileDevice) {
+      if (mobileDevice->fromMSDKHandler.callback) {
+        if (threadSupported) {
+          DDEBUG("Received data from mobile\n");
+          protocolLayer->getThreadHandle()->lockNonBlockCBAck();
+          this->circularBuffer->cbPush(this->circularBuffer, mobileDevice->fromMSDKHandler,
+                                       *pushDataEntry);
+          protocolLayer->getThreadHandle()->freeNonBlockCBAck();
+        } else {
+          mobileDevice->fromMSDKHandler.callback(this, *(pushDataEntry), mobileDevice->fromMSDKHandler.userData);
+        }
+      }
+    }
+
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::psdkWidgetValue,
+                  sizeof(cmd)) == 0)
+  {
+    /*! @TODO The decoding of psdk widget values supports only one psdk device.
+     * So don't initialize two psdk device in the same time */
+    if (psdkManager) {
+      for(int i = 0; i < PAYLOAD_INDEX_CNT; i++)
+      {
+        VehicleCallBackHandler
+            *handler =
+          psdkManager->getSubscribeWidgetValuesHandler((PayloadIndexType) i);
+        if (handler && handler->callback) {
+          if (threadSupported) {
+            DDEBUG("Received value data from payload widget\n");
+            protocolLayer->getThreadHandle()->lockNonBlockCBAck();
+            this->circularBuffer->cbPush(this->circularBuffer,
+                                         *handler, *pushDataEntry);
+            protocolLayer->getThreadHandle()->freeNonBlockCBAck();
+          } else {
+            handler->callback(this, *(pushDataEntry),
+                              handler->userData);
+          }
+        }
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::fromPayload,
+                  sizeof(cmd)) == 0)
+  {
+    if (payloadDevice) {
+      if (payloadDevice->fromPSDKHandler.callback) {
+        if (threadSupported) {
+          DDEBUG("Received data from payload\n");
+          protocolLayer->getThreadHandle()->lockNonBlockCBAck();
+          this->circularBuffer->cbPush(this->circularBuffer, payloadDevice->fromPSDKHandler,
+                                       *pushDataEntry);
+          protocolLayer->getThreadHandle()->freeNonBlockCBAck();
+        } else {
+          payloadDevice->fromPSDKHandler.callback(this, *(pushDataEntry), payloadDevice->fromPSDKHandler.userData);
+        }
+      }
+    }
+    /*! @TODO The decoding of psdk commonication data supports only one psdk device.
+     * So don't initialize two psdk device in the same time */
+    if (psdkManager) {
+      for(int i = 0; i < PAYLOAD_INDEX_CNT; i++)
+      {
+        VehicleCallBackHandler
+          *handler =
+          psdkManager->getCommunicationHandler((PayloadIndexType) i);
+        if (handler && handler->callback) {
+          if (threadSupported) {
+            DDEBUG("Received commonication data from PSDK\n");
+            protocolLayer->getThreadHandle()->lockNonBlockCBAck();
+            this->circularBuffer->cbPush(this->circularBuffer,
+                                         *handler, *pushDataEntry);
+            protocolLayer->getThreadHandle()->freeNonBlockCBAck();
+          } else {
+            handler->callback(this, *(pushDataEntry),
+                              handler->userData);
+          }
+        }
+      }
+    }
+  }
+  else if (memcmp(cmd, OpenProtocolCMD::CMDSet::Broadcast::mission,
+                  sizeof(cmd)) == 0)
   {
     if (missionManager)
     {
