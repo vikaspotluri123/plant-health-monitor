@@ -207,7 +207,11 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->actionRepeat    = 3;
   wp->commandList[0] = 0;
   wp->commandParameter[0] = 1000;
-  for (int i = 1; i < 16; ++i)
+  wp->commandList[1] = DJI::OSDK::OpenProtocolCMD::CMDSet::Broadcast::waypoint;
+  wp->commandParameter[1] = 1;
+  wp->commandList[2] = 0;
+  wp->commandParameter[2] = 1000;
+  for (int i = 3; i < 16; ++i)
   {
     wp->commandList[i]      = 0;
     wp->commandParameter[i] = 0;
