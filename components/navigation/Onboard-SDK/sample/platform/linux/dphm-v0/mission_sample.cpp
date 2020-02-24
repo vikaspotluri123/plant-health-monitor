@@ -204,7 +204,7 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->gimbalPitch     = 0;
   wp->turnMode        = 0;
   wp->hasAction       = 0;
-  wp->actionTimeLimit = 100;
+  wp->actionTimeLimit = 10000;
   wp->actionNumber    = 0;
   wp->actionRepeat    = 0;
   for (int i = 0; i < 16; ++i)
