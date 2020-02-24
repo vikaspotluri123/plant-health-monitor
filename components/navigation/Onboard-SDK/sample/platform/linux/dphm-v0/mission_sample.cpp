@@ -203,7 +203,7 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->turnMode        = 0;
   wp->hasAction       = 0;
   wp->actionTimeLimit = 10000;
-  wp->actionNumber    = 0;
+  wp->actionNumber    = 1;
   wp->actionRepeat    = 0;
   wp->commandList[0] = 0;
   wp->commandParameter[0] = 1000;
