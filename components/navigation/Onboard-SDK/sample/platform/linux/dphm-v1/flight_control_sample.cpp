@@ -172,6 +172,7 @@ moveByPositionOffset(
   Telemetry::TypeMap<TOPIC_QUATERNION>::type subscriptionQ;
   // Quaternion retrieved via broadcast
   Telemetry::Quaternion broadcastQ;
+  double                yawInRad;
 
   broadcastQ = vehicle->broadcast->getQuaternion();
   yawInRad   = toEulerAngle((static_cast<void*>(&broadcastQ))).z / DEG2RAD;
