@@ -164,6 +164,8 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
     std::cout << "Attitude Quaternion   (w,x,y,z)       = " << quaternion.q0
               << ", " << quaternion.q1 << ", " << quaternion.q2 << ", "
               << quaternion.q3 << "\n";
+    std::cout << "Waypoint Info                         = " 
+              << vehicle->missionManager->wpMission->getWaypointSettings(responseTimeout) << "\n";
     std::cout << "-------\n\n";
 
     usleep(500000);
