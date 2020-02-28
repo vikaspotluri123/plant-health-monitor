@@ -101,13 +101,8 @@ static PyObject *py_cleanup(PyObject *self, PyObject *args, PyObject *kwargs)
 
    if (chanlist == NULL) {  // channel kwarg not set
       // do nothing
-#if PY_MAJOR_VERSION > 2
    } else if (PyLong_Check(chanlist)) {
       channel = (int)PyLong_AsLong(chanlist);
-#else
-   } else if (PyInt_Check(chanlist)) {
-      channel = (int)PyInt_AsLong(chanlist);
-#endif
       if (PyErr_Occurred())
          return NULL;
       chanlist = NULL;
@@ -153,13 +148,8 @@ static PyObject *py_cleanup(PyObject *self, PyObject *args, PyObject *kwargs)
                }
             }
 
-#if PY_MAJOR_VERSION > 2
             if (PyLong_Check(tempobj)) {
                channel = (int)PyLong_AsLong(tempobj);
-#else
-            if (PyInt_Check(tempobj)) {
-               channel = (int)PyInt_AsLong(tempobj);
-#endif
                if (PyErr_Occurred())
                   return NULL;
             } else {
@@ -230,13 +220,8 @@ static PyObject *py_setup_channel(PyObject *self, PyObject *args, PyObject *kwar
    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|ii", kwlist, &chanlist, &direction, &pud, &initial))
       return NULL;
 
-#if PY_MAJOR_VERSION > 2
    if (PyLong_Check(chanlist)) {
       channel = (int)PyLong_AsLong(chanlist);
-#else
-   if (PyInt_Check(chanlist)) {
-      channel = (int)PyInt_AsLong(chanlist);
-#endif
       if (PyErr_Occurred())
          return NULL;
       chanlist = NULL;
@@ -306,13 +291,8 @@ static PyObject *py_setup_channel(PyObject *self, PyObject *args, PyObject *kwar
          }
       }
 
-#if PY_MAJOR_VERSION > 2
       if (PyLong_Check(tempobj)) {
          channel = (int)PyLong_AsLong(tempobj);
-#else
-      if (PyInt_Check(tempobj)) {
-         channel = (int)PyInt_AsLong(tempobj);
-#endif
          if (PyErr_Occurred())
              return NULL;
       } else {
@@ -325,189 +305,6 @@ static PyObject *py_setup_channel(PyObject *self, PyObject *args, PyObject *kwar
    }
 
    Py_RETURN_NONE;
-}
-
-// python function output(channel(s), value(s))
-static PyObject *py_output_gpio(PyObject *self, PyObject *args)
-{
-   unsigned int gpio;
-   int channel = -1;
-   int value = -1;
-   int i;
-   PyObject *chanlist = NULL;
-   PyObject *valuelist = NULL;
-   PyObject *chantuple = NULL;
-   PyObject *valuetuple = NULL;
-   PyObject *tempobj = NULL;
-   int chancount = -1;
-   int valuecount = -1;
-
-   int output(void) {
-      if (get_gpio_number(channel, &gpio))
-          return 0;
-
-      if (gpio_direction[gpio] != OUTPUT)
-      {
-         PyErr_SetString(PyExc_RuntimeError, "The GPIO channel has not been set up as an OUTPUT");
-         return 0;
-      }
-
-      if (check_gpio_priv())
-         return 0;
-
-      output_gpio(gpio, value);
-      return 1;
-   }
-
-   if (!PyArg_ParseTuple(args, "OO", &chanlist, &valuelist))
-       return NULL;
-
-#if PY_MAJOR_VERSION >= 3
-   if (PyLong_Check(chanlist)) {
-      channel = (int)PyLong_AsLong(chanlist);
-#else
-   if (PyInt_Check(chanlist)) {
-      channel = (int)PyInt_AsLong(chanlist);
-#endif
-      if (PyErr_Occurred())
-         return NULL;
-      chanlist = NULL;
-   } else if (PyList_Check(chanlist)) {
-      // do nothing
-   } else if (PyTuple_Check(chanlist)) {
-      chantuple = chanlist;
-      chanlist = NULL;
-   } else {
-       PyErr_SetString(PyExc_ValueError, "Channel must be an integer or list/tuple of integers");
-       return NULL;
-   }
-
-#if PY_MAJOR_VERSION >= 3
-   if (PyLong_Check(valuelist)) {
-       value = (int)PyLong_AsLong(valuelist);
-#else
-   if (PyInt_Check(valuelist)) {
-       value = (int)PyInt_AsLong(valuelist);
-#endif
-      if (PyErr_Occurred())
-         return NULL;
-       valuelist = NULL;
-   } else if (PyList_Check(valuelist)) {
-      // do nothing
-   } else if (PyTuple_Check(valuelist)) {
-      valuetuple = valuelist;
-      valuelist = NULL;
-   } else {
-       PyErr_SetString(PyExc_ValueError, "Value must be an integer/boolean or a list/tuple of integers/booleans");
-       return NULL;
-   }
-
-   if (chanlist)
-       chancount = PyList_Size(chanlist);
-   if (chantuple)
-       chancount = PyTuple_Size(chantuple);
-   if (valuelist)
-       valuecount = PyList_Size(valuelist);
-   if (valuetuple)
-       valuecount = PyTuple_Size(valuetuple);
-   if ((chancount != -1 && chancount != valuecount && valuecount != -1) || (chancount == -1 && valuecount != -1)) {
-       PyErr_SetString(PyExc_RuntimeError, "Number of channels != number of values");
-       return NULL;
-   }
-
-   if (chancount == -1) {
-      if (!output())
-         return NULL;
-      Py_RETURN_NONE;
-   }
-
-   for (i=0; i<chancount; i++) {
-      // get channel number
-      if (chanlist) {
-         if ((tempobj = PyList_GetItem(chanlist, i)) == NULL) {
-            return NULL;
-         }
-      } else { // assume chantuple
-         if ((tempobj = PyTuple_GetItem(chantuple, i)) == NULL) {
-            return NULL;
-         }
-      }
-
-#if PY_MAJOR_VERSION >= 3
-      if (PyLong_Check(tempobj)) {
-         channel = (int)PyLong_AsLong(tempobj);
-#else
-      if (PyInt_Check(tempobj)) {
-         channel = (int)PyInt_AsLong(tempobj);
-#endif
-         if (PyErr_Occurred())
-             return NULL;
-      } else {
-          PyErr_SetString(PyExc_ValueError, "Channel must be an integer");
-          return NULL;
-      }
-
-      // get value
-      if (valuecount > 0) {
-          if (valuelist) {
-             if ((tempobj = PyList_GetItem(valuelist, i)) == NULL) {
-                return NULL;
-             }
-          } else { // assume valuetuple
-             if ((tempobj = PyTuple_GetItem(valuetuple, i)) == NULL) {
-                return NULL;
-             }
-          }
-#if PY_MAJOR_VERSION >= 3
-          if (PyLong_Check(tempobj)) {
-             value = (int)PyLong_AsLong(tempobj);
-#else
-          if (PyInt_Check(tempobj)) {
-             value = (int)PyInt_AsLong(tempobj);
-#endif
-             if (PyErr_Occurred())
-                 return NULL;
-          } else {
-              PyErr_SetString(PyExc_ValueError, "Value must be an integer or boolean");
-              return NULL;
-          }
-      }
-      if (!output())
-         return NULL;
-   }
-
-   Py_RETURN_NONE;
-}
-
-// python function value = input(channel)
-static PyObject *py_input_gpio(PyObject *self, PyObject *args)
-{
-   unsigned int gpio;
-   int channel;
-   PyObject *value;
-
-   if (!PyArg_ParseTuple(args, "i", &channel))
-      return NULL;
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   // check channel is set up as an input or output
-   if (gpio_direction[gpio] != INPUT && gpio_direction[gpio] != OUTPUT)
-   {
-      PyErr_SetString(PyExc_RuntimeError, "You must setup() the GPIO channel first");
-      return NULL;
-   }
-
-   if (check_gpio_priv())
-      return NULL;
-
-   if (input_gpio(gpio)) {
-      value = Py_BuildValue("i", HIGH);
-   } else {
-      value = Py_BuildValue("i", LOW);
-   }
-   return value;
 }
 
 // python function setmode(mode)
@@ -544,24 +341,6 @@ static PyObject *py_setmode(PyObject *self, PyObject *args)
 
    gpio_mode = new_mode;
    Py_RETURN_NONE;
-}
-
-// python function getmode()
-static PyObject *py_getmode(PyObject *self, PyObject *args)
-{
-   PyObject *value;
-
-   if (setup_error)
-   {
-      PyErr_SetString(PyExc_RuntimeError, "Module not imported correctly!");
-      return NULL;
-   }
-
-   if (gpio_mode == MODE_UNKNOWN)
-      Py_RETURN_NONE;
-
-   value = Py_BuildValue("i", gpio_mode);
-   return value;
 }
 
 static unsigned int chan_from_gpio(unsigned int gpio)
@@ -634,308 +413,6 @@ static int add_py_callback(unsigned int gpio, PyObject *cb_func)
    return 0;
 }
 
-// python function add_event_callback(gpio, callback)
-static PyObject *py_add_event_callback(PyObject *self, PyObject *args, PyObject *kwargs)
-{
-   unsigned int gpio;
-   int channel;
-   PyObject *cb_func;
-   char *kwlist[] = {"gpio", "callback", NULL};
-
-   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "iO|i", kwlist, &channel, &cb_func))
-      return NULL;
-
-   if (!PyCallable_Check(cb_func))
-   {
-      PyErr_SetString(PyExc_TypeError, "Parameter must be callable");
-      return NULL;
-   }
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   // check channel is set up as an input
-   if (gpio_direction[gpio] != INPUT)
-   {
-      PyErr_SetString(PyExc_RuntimeError, "You must setup() the GPIO channel as an input first");
-      return NULL;
-   }
-
-   if (!gpio_event_added(gpio))
-   {
-      PyErr_SetString(PyExc_RuntimeError, "Add event detection using add_event_detect first before adding a callback");
-      return NULL;
-   }
-
-   if (add_py_callback(gpio, cb_func) != 0)
-      return NULL;
-
-   Py_RETURN_NONE;
-}
-
-// python function add_event_detect(gpio, edge, callback=None, bouncetime=None)
-static PyObject *py_add_event_detect(PyObject *self, PyObject *args, PyObject *kwargs)
-{
-   unsigned int gpio;
-   int channel, edge, result;
-   int bouncetime = -666;
-   PyObject *cb_func = NULL;
-   char *kwlist[] = {"gpio", "edge", "callback", "bouncetime", NULL};
-
-   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii|Oi", kwlist, &channel, &edge, &cb_func, &bouncetime))
-      return NULL;
-
-   if (cb_func != NULL && !PyCallable_Check(cb_func))
-   {
-      PyErr_SetString(PyExc_TypeError, "Parameter must be callable");
-      return NULL;
-   }
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   // check channel is set up as an input
-   if (gpio_direction[gpio] != INPUT)
-   {
-      PyErr_SetString(PyExc_RuntimeError, "You must setup() the GPIO channel as an input first");
-      return NULL;
-   }
-
-   // is edge valid value
-   edge -= PY_EVENT_CONST_OFFSET;
-   if (edge != RISING_EDGE && edge != FALLING_EDGE && edge != BOTH_EDGE)
-   {
-      PyErr_SetString(PyExc_ValueError, "The edge must be set to RISING, FALLING or BOTH");
-      return NULL;
-   }
-
-   if (bouncetime <= 0 && bouncetime != -666)
-   {
-      PyErr_SetString(PyExc_ValueError, "Bouncetime must be greater than 0");
-      return NULL;
-   }
-
-   if (check_gpio_priv())
-      return NULL;
-
-   if ((result = add_edge_detect(gpio, edge, bouncetime)) != 0)   // starts a thread
-   {
-      if (result == 1)
-      {
-         PyErr_SetString(PyExc_RuntimeError, "Conflicting edge detection already enabled for this GPIO channel");
-         return NULL;
-      } else {
-         PyErr_SetString(PyExc_RuntimeError, "Failed to add edge detection");
-         return NULL;
-      }
-   }
-
-   if (cb_func != NULL)
-      if (add_py_callback(gpio, cb_func) != 0)
-         return NULL;
-
-   Py_RETURN_NONE;
-}
-
-// python function remove_event_detect(gpio)
-static PyObject *py_remove_event_detect(PyObject *self, PyObject *args)
-{
-   unsigned int gpio;
-   int channel;
-   struct py_callback *cb = py_callbacks;
-   struct py_callback *temp;
-   struct py_callback *prev = NULL;
-
-   if (!PyArg_ParseTuple(args, "i", &channel))
-      return NULL;
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   // remove all python callbacks for gpio
-   while (cb != NULL)
-   {
-      if (cb->gpio == gpio)
-      {
-         Py_XDECREF(cb->py_cb);
-         if (prev == NULL)
-            py_callbacks = cb->next;
-         else
-            prev->next = cb->next;
-         temp = cb;
-         cb = cb->next;
-         free(temp);
-      } else {
-         prev = cb;
-         cb = cb->next;
-      }
-   }
-
-   if (check_gpio_priv())
-      return NULL;
-
-   remove_edge_detect(gpio);
-
-   Py_RETURN_NONE;
-}
-
-// python function value = event_detected(channel)
-static PyObject *py_event_detected(PyObject *self, PyObject *args)
-{
-   unsigned int gpio;
-   int channel;
-
-   if (!PyArg_ParseTuple(args, "i", &channel))
-      return NULL;
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   if (event_detected(gpio))
-      Py_RETURN_TRUE;
-   else
-      Py_RETURN_FALSE;
-}
-
-// python function channel = wait_for_edge(channel, edge, bouncetime=None, timeout=None)
-static PyObject *py_wait_for_edge(PyObject *self, PyObject *args, PyObject *kwargs)
-{
-   unsigned int gpio;
-   int channel, edge, result;
-   int bouncetime = -666; // None
-   int timeout = -1; // None
-
-   static char *kwlist[] = {"channel", "edge", "bouncetime", "timeout", NULL};
-
-   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii|ii", kwlist, &channel, &edge, &bouncetime, &timeout))
-      return NULL;
-
-   if (get_gpio_number(channel, &gpio))
-      return NULL;
-
-   // check channel is setup as an input
-   if (gpio_direction[gpio] != INPUT)
-   {
-      PyErr_SetString(PyExc_RuntimeError, "You must setup() the GPIO channel as an input first");
-      return NULL;
-   }
-
-   // is edge a valid value?
-   edge -= PY_EVENT_CONST_OFFSET;
-   if (edge != RISING_EDGE && edge != FALLING_EDGE && edge != BOTH_EDGE)
-   {
-      PyErr_SetString(PyExc_ValueError, "The edge must be set to RISING, FALLING or BOTH");
-      return NULL;
-   }
-
-   if (bouncetime <= 0 && bouncetime != -666)
-   {
-      PyErr_SetString(PyExc_ValueError, "Bouncetime must be greater than 0");
-      return NULL;
-   }
-
-   if (timeout <= 0 && timeout != -1)
-   {
-      PyErr_SetString(PyExc_ValueError, "Timeout must be greater than 0");
-      return NULL;
-   }
-
-   if (check_gpio_priv())
-      return NULL;
-
-   Py_BEGIN_ALLOW_THREADS // disable GIL
-   result = blocking_wait_for_edge(gpio, edge, bouncetime, timeout);
-   Py_END_ALLOW_THREADS   // enable GIL
-
-   if (result == 0) {
-      Py_RETURN_NONE;
-   } else if (result == -1) {
-      PyErr_SetString(PyExc_RuntimeError, "Conflicting edge detection events already exist for this GPIO channel");
-      return NULL;
-   } else if (result == -2) {
-      PyErr_SetString(PyExc_RuntimeError, "Error waiting for edge");
-      return NULL;
-   } else {
-      return Py_BuildValue("i", channel);
-   }
-
-}
-
-// python function value = gpio_function(channel)
-static PyObject *py_gpio_function(PyObject *self, PyObject *args)
-{
-   unsigned int gpio;
-   int channel;
-   int f;
-   PyObject *func;
-
-   if (!PyArg_ParseTuple(args, "i", &channel))
-      return NULL;
-
-   if (get_gpio_number(channel, &gpio))
-       return NULL;
-
-   if (mmap_gpio_mem())
-      return NULL;
-
-   f = gpio_function(gpio);
-   switch (f)
-   {
-      case 0 : f = INPUT;  break;
-      case 1 : f = OUTPUT; break;
-
-      // ALT 0
-      case 4 : switch (gpio)
-               {
-                  case 0 :
-                  case 1 :
-                  case 2 :
-                  case 3 : f = I2C; break;
-
-                  case 7 :
-                  case 8 :
-                  case 9 :
-                  case 10 :
-                  case 11 : f = SPI; break;
-
-                  case 12 :
-                  case 13 : f = PWM; break;
-
-                  case 14 :
-                  case 15 : f = SERIAL; break;
-
-                  case 28 :
-                  case 29 : f = I2C; break;
-
-                  default : f = MODE_UNKNOWN; break;
-               }
-               break;
-
-      // ALT 5
-      case 2 : if (gpio == 18 || gpio == 19) f = PWM; else f = MODE_UNKNOWN;
-               break;
-
-      // ALT 4
-      case 3 : switch (gpio)
-
-               {
-                  case 16 :
-                  case 17 :
-                  case 18 :
-                  case 19 :
-                  case 20 :
-                  case 21 : f = SPI; break;
-                  default : f = MODE_UNKNOWN; break;
-               }
-               break;
-
-      default : f = MODE_UNKNOWN; break;
-
-   }
-   func = Py_BuildValue("i", f);
-   return func;
-}
-
 // python function setwarnings(state)
 static PyObject *py_setwarnings(PyObject *self, PyObject *args)
 {
@@ -950,25 +427,6 @@ static PyObject *py_setwarnings(PyObject *self, PyObject *args)
 
    Py_RETURN_NONE;
 }
-
-static const char moduledocstring[] = "GPIO functionality of a Raspberry Pi using Python";
-
-PyMethodDef rpi_gpio_methods[] = {
-   {"setup", (PyCFunction)py_setup_channel, METH_VARARGS | METH_KEYWORDS, "Set up a GPIO channel or list of channels with a direction and (optional) pull/up down control\nchannel        - either board pin number or BCM number depending on which mode is set.\ndirection      - IN or OUT\n[pull_up_down] - PUD_OFF (default), PUD_UP or PUD_DOWN\n[initial]      - Initial value for an output channel"},
-   {"cleanup", (PyCFunction)py_cleanup, METH_VARARGS | METH_KEYWORDS, "Clean up by resetting all GPIO channels that have been used by this program to INPUT with no pullup/pulldown and no event detection\n[channel] - individual channel or list/tuple of channels to clean up.  Default - clean every channel that has been used."},
-   {"output", py_output_gpio, METH_VARARGS, "Output to a GPIO channel or list of channels\nchannel - either board pin number or BCM number depending on which mode is set.\nvalue   - 0/1 or False/True or LOW/HIGH"},
-   {"input", py_input_gpio, METH_VARARGS, "Input from a GPIO channel.  Returns HIGH=1=True or LOW=0=False\nchannel - either board pin number or BCM number depending on which mode is set."},
-   {"setmode", py_setmode, METH_VARARGS, "Set up numbering mode to use for channels.\nBOARD - Use Raspberry Pi board numbers\nBCM   - Use Broadcom GPIO 00..nn numbers"},
-   {"getmode", py_getmode, METH_VARARGS, "Get numbering mode used for channel numbers.\nReturns BOARD, BCM or None"},
-   {"add_event_detect", (PyCFunction)py_add_event_detect, METH_VARARGS | METH_KEYWORDS, "Enable edge detection events for a particular GPIO channel.\nchannel      - either board pin number or BCM number depending on which mode is set.\nedge         - RISING, FALLING or BOTH\n[callback]   - A callback function for the event (optional)\n[bouncetime] - Switch bounce timeout in ms for callback"},
-   {"remove_event_detect", py_remove_event_detect, METH_VARARGS, "Remove edge detection for a particular GPIO channel\nchannel - either board pin number or BCM number depending on which mode is set."},
-   {"event_detected", py_event_detected, METH_VARARGS, "Returns True if an edge has occurred on a given GPIO.  You need to enable edge detection using add_event_detect() first.\nchannel - either board pin number or BCM number depending on which mode is set."},
-   {"add_event_callback", (PyCFunction)py_add_event_callback, METH_VARARGS | METH_KEYWORDS, "Add a callback for an event already defined using add_event_detect()\nchannel      - either board pin number or BCM number depending on which mode is set.\ncallback     - a callback function"},
-   {"wait_for_edge", (PyCFunction)py_wait_for_edge, METH_VARARGS | METH_KEYWORDS, "Wait for an edge.  Returns the channel number or None on timeout.\nchannel      - either board pin number or BCM number depending on which mode is set.\nedge         - RISING, FALLING or BOTH\n[bouncetime] - time allowed between calls to allow for switchbounce\n[timeout]    - timeout in ms"},
-   {"gpio_function", py_gpio_function, METH_VARARGS, "Return the current GPIO function (IN, OUT, PWM, SERIAL, I2C, SPI)\nchannel - either board pin number or BCM number depending on which mode is set."},
-   {"setwarnings", py_setwarnings, METH_VARARGS, "Enable or disable warning messages"},
-   {NULL, NULL, 0, NULL}
-};
 
 static struct PyModuleDef rpigpiomodule = {
    PyModuleDef_HEAD_INIT,
