@@ -30,12 +30,20 @@
  *
  */
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <dji_open_protocol.hpp>
 #include "mission_sample.hpp"
 
 using namespace DJI::OSDK;
 using namespace DJI::OSDK::Telemetry;
+
+void onWayPoint(Vehicle* vehicle, RecvContainer recvFrame, UserData userData) {
+  std::cout << "\tWaypoint Index:" << (unsigned)recvFrame.recvData.wayPointReachedData.waypoint_index << '\n';
+  std::cout << "\tIncident Type:" << (unsigned)recvFrame.recvData.wayPointReachedData.incident_type << '\n';
+  std::cout << "\tCurrent Status:" << (unsigned)recvFrame.recvData.wayPointReachedData.current_status << '\n';
+}
 
 bool
 runDPHMMission(Vehicle* vehicle, int responseTimeout)
@@ -50,22 +58,19 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
 
   // Obtain Control Authority
   ACK::ErrorCode ctrlAck = vehicle->obtainCtrlAuthority(responseTimeout);
-  if (ACK::getError(ctrlAck))
-  {
+  if (ACK::getError(ctrlAck)) {
     ACK::getErrorCodeMessage(ctrlAck, __func__);
-  }
-  else
-  {
+  } else {
     std::cout << "Obtained drone control authority.\n";
   }
 
-  ACK::ErrorCode initAck = vehicle->missionManager->init(
-    DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
-  if (ACK::getError(initAck))
-  {
+  ACK::ErrorCode initAck = vehicle->missionManager->init(DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
+  if (ACK::getError(initAck)) {
     ACK::getErrorCodeMessage(initAck, __func__);
   }
 
+  vehicle->missionManager->wpMission->setWaypointCallback(&onWayPoint, nullptr);
+  vehicle->missionManager->wpMission->setWaypointEventCallback(&onWayPoint, nullptr);
   vehicle->missionManager->printInfo();
 
   // Waypoint Mission: Create Waypoints
@@ -76,7 +81,6 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   // Waypoint Mission: Upload the waypoints
   std::cout << "Uploading Waypoints..\n";
   uploadWaypoints(vehicle, generatedWaypts, responseTimeout);
-
 
   // Takeoff
   ACK::ErrorCode takeoffAck = vehicle->control->takeoff(responseTimeout);
@@ -111,7 +115,66 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   {
     std::cout << "Started DPHM Mission.\n";
   }
-  sleep(2000);
+
+  // Counters
+  int elapsedTimeInMs = 0;
+  int timeToPrintInMs = 60000;
+
+  // We will listen to five broadcast data sets:
+  // 1. Flight Status
+  // 2. Global Position
+  // 3. RC Channels
+  // 4. Velocity
+  // 5. Quaternion
+  // 6. Avoid obstacle data
+
+  // Please make sure your drone is in simulation mode. You can
+  // fly the drone with your RC to get different values.
+
+  Telemetry::Status         status;
+  Telemetry::GlobalPosition globalPosition;
+  Telemetry::RC             rc;
+  Telemetry::Vector3f       velocity;
+  Telemetry::Quaternion     quaternion;
+
+  const int TIMEOUT = 20;
+
+  // Re-set Broadcast frequencies to their default values
+  ACK::ErrorCode ack = vehicle->broadcast->setBroadcastFreqDefaults(TIMEOUT);
+
+  // Print in a loop for x seconds
+  while (elapsedTimeInMs < timeToPrintInMs)
+  {
+    // Matrice 100 broadcasts only flight status
+    status         = vehicle->broadcast->getStatus();
+    globalPosition = vehicle->broadcast->getGlobalPosition();
+    rc             = vehicle->broadcast->getRC();
+    velocity       = vehicle->broadcast->getVelocity();
+    quaternion     = vehicle->broadcast->getQuaternion();
+
+    std::cout << "Counter = " << elapsedTimeInMs << ":\n";
+    std::cout << "-------\n";
+    std::cout << "Flight Status (Flight, mode)          = "
+              << (unsigned)status.flight << ", " << status.mode << "\n";
+    std::cout << "Position              (LLA)           = "
+              << globalPosition.latitude << ", " << globalPosition.longitude
+              << ", " << globalPosition.altitude << "\n";
+    std::cout << "RC Commands           (r/p/y/thr)     = " << rc.roll << ", "
+              << rc.pitch << ", " << rc.yaw << ", " << rc.throttle << "\n";
+    std::cout << "Velocity              (vx,vy,vz)      = " << velocity.x
+              << ", " << velocity.y << ", " << velocity.z << "\n";
+    std::cout << "Attitude Quaternion   (w,x,y,z)       = " << quaternion.q0
+              << ", " << quaternion.q1 << ", " << quaternion.q2 << ", "
+              << quaternion.q3 << "\n";
+    std::cout << "-------\n\n";
+
+    usleep(500000);
+    elapsedTimeInMs += 500;
+  }
+
+  std::cout << "Done printing!\n";
+
+  /*sleep(2000);
 
   // Stop
   std::cout << "Stop" << std::endl;
@@ -128,7 +191,7 @@ runDPHMMission(Vehicle* vehicle, int responseTimeout)
   {
     // No error. Wait for a few seconds to land
     sleep(10);
-  }
+  }*/
 
   return true;
 }
@@ -140,11 +203,13 @@ setWaypointDefaults(WayPointSettings* wp)
   wp->yaw             = 0;
   wp->gimbalPitch     = 0;
   wp->turnMode        = 0;
-  wp->hasAction       = 0;
-  wp->actionTimeLimit = 100;
-  wp->actionNumber    = 0;
-  wp->actionRepeat    = 0;
-  for (int i = 0; i < 16; ++i)
+  wp->hasAction       = 1;
+  wp->actionTimeLimit = 10000;
+  wp->actionNumber    = 1;
+  wp->actionRepeat    = 1;
+  wp->commandList[0] = 0;
+  wp->commandParameter[0] = 1000;
+  for (int i = 1; i < 16; ++i)
   {
     wp->commandList[i]      = 0;
     wp->commandParameter[i] = 0;

@@ -55,7 +55,7 @@ main(int argc, char** argv)
   int     hotptInitRadius;
   int     responseTimeout = 1;
 
-  // Display interactive prompt
+  /* // Display interactive prompt
   std::cout
     << "| Available commands:                                            |"
     << std::endl;
@@ -67,11 +67,13 @@ main(int argc, char** argv)
   switch (inputChar)
   {
     case 'a':
-      runDPHMMission(vehicle, responseTimeout);
       break;
+      runDPHMMission(vehicle, responseTimeout);
     default:
       break;
-  }
+  } */
+
+  runDPHMMission(vehicle, responseTimeout);
 
   return 0;
 }
