@@ -970,7 +970,6 @@ PyMethodDef rpi_gpio_methods[] = {
    {NULL, NULL, 0, NULL}
 };
 
-#if PY_MAJOR_VERSION > 2
 static struct PyModuleDef rpigpiomodule = {
    PyModuleDef_HEAD_INIT,
    "RPi._GPIO",      // name of module
@@ -978,24 +977,14 @@ static struct PyModuleDef rpigpiomodule = {
    -1,               // size of per-interpreter state of the module, or -1 if the module keeps state in global variables.
    rpi_gpio_methods
 };
-#endif
 
-#if PY_MAJOR_VERSION > 2
 PyMODINIT_FUNC PyInit__GPIO(void)
-#else
-PyMODINIT_FUNC init_GPIO(void)
-#endif
 {
    int i;
    PyObject *module = NULL;
 
-#if PY_MAJOR_VERSION > 2
    if ((module = PyModule_Create(&rpigpiomodule)) == NULL)
       return NULL;
-#else
-   if ((module = Py_InitModule3("RPi._GPIO", rpi_gpio_methods, moduledocstring)) == NULL)
-      return;
-#endif
 
    define_constants(module);
 
@@ -1007,11 +996,7 @@ PyMODINIT_FUNC init_GPIO(void)
    {
       PyErr_SetString(PyExc_RuntimeError, "This module can only be run on a Raspberry Pi!");
       setup_error = 1;
-#if PY_MAJOR_VERSION > 2
       return NULL;
-#else
-      return;
-#endif
    }
    board_info = Py_BuildValue("{sissssssssss}",
                               "P1_REVISION",rpiinfo.p1_revision,
@@ -1035,11 +1020,7 @@ PyMODINIT_FUNC init_GPIO(void)
 
    // Add PWM class
    if (PWM_init_PWMType() == NULL)
-#if PY_MAJOR_VERSION > 2
       return NULL;
-#else
-      return;
-#endif
    Py_INCREF(&PWMType);
    PyModule_AddObject(module, "PWM", (PyObject*)&PWMType);
 
@@ -1051,27 +1032,15 @@ PyMODINIT_FUNC init_GPIO(void)
    {
       setup_error = 1;
       cleanup();
-#if PY_MAJOR_VERSION > 2
       return NULL;
-#else
-      return;
-#endif
    }
 
    if (Py_AtExit(event_cleanup_all) != 0)
    {
       setup_error = 1;
       cleanup();
-#if PY_MAJOR_VERSION > 2
       return NULL;
-#else
-      return;
-#endif
    }
 
-#if PY_MAJOR_VERSION > 2
    return module;
-#else
-   return;
-#endif
 }
