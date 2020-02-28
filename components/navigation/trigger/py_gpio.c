@@ -22,14 +22,10 @@ SOFTWARE.
 
 #include "Python.h"
 #include "c_gpio.h"
-#include "event_gpio.h"
 #include "py_pwm.h"
-#include "cpuinfo.h"
 #include "constants.h"
 #include "common.h"
 
-static PyObject *rpi_revision; // deprecated
-static PyObject *board_info;
 static int gpio_warnings = 1;
 
 struct py_callback
@@ -385,34 +381,6 @@ static void run_py_callbacks(unsigned int gpio)
    }
 }
 
-static int add_py_callback(unsigned int gpio, PyObject *cb_func)
-{
-   struct py_callback *new_py_cb;
-   struct py_callback *cb = py_callbacks;
-
-   // add callback to py_callbacks list
-   new_py_cb = malloc(sizeof(struct py_callback));
-   if (new_py_cb == 0)
-   {
-      PyErr_NoMemory();
-      return -1;
-   }
-   new_py_cb->py_cb = cb_func;
-   Py_XINCREF(cb_func);         // Add a reference to new callback
-   new_py_cb->gpio = gpio;
-   new_py_cb->next = NULL;
-   if (py_callbacks == NULL) {
-      py_callbacks = new_py_cb;
-   } else {
-      // add to end of list
-      while (cb->next != NULL)
-         cb = cb->next;
-      cb->next = new_py_cb;
-   }
-   add_edge_callback(gpio, run_py_callbacks);
-   return 0;
-}
-
 // python function setwarnings(state)
 static PyObject *py_setwarnings(PyObject *self, PyObject *args)
 {
@@ -427,14 +395,6 @@ static PyObject *py_setwarnings(PyObject *self, PyObject *args)
 
    Py_RETURN_NONE;
 }
-
-static struct PyModuleDef rpigpiomodule = {
-   PyModuleDef_HEAD_INIT,
-   "RPi._GPIO",      // name of module
-   moduledocstring,  // module documentation, may be NULL
-   -1,               // size of per-interpreter state of the module, or -1 if the module keeps state in global variables.
-   rpi_gpio_methods
-};
 
 PyMODINIT_FUNC PyInit__GPIO(void)
 {
@@ -456,14 +416,6 @@ PyMODINIT_FUNC PyInit__GPIO(void)
       setup_error = 1;
       return NULL;
    }
-   board_info = Py_BuildValue("{sissssssssss}",
-                              "P1_REVISION",rpiinfo.p1_revision,
-                              "REVISION",&rpiinfo.revision,
-                              "TYPE",rpiinfo.type,
-                              "MANUFACTURER",rpiinfo.manufacturer,
-                              "PROCESSOR",rpiinfo.processor,
-                              "RAM",rpiinfo.ram);
-   PyModule_AddObject(module, "RPI_INFO", board_info);
 
    if (rpiinfo.p1_revision == 1) {
       pin_to_gpio = &pin_to_gpio_rev1;
@@ -472,9 +424,6 @@ PyMODINIT_FUNC PyInit__GPIO(void)
    } else { // assume model B+ or A+ or 2B
       pin_to_gpio = &pin_to_gpio_rev3;
    }
-
-   rpi_revision = Py_BuildValue("i", rpiinfo.p1_revision);     // deprecated
-   PyModule_AddObject(module, "RPI_REVISION", rpi_revision);   // deprecated
 
    // Add PWM class
    if (PWM_init_PWMType() == NULL)
