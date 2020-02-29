@@ -37,5 +37,3 @@ const int pin_to_gpio_rev3[41];
 const int (*pin_to_gpio)[41];
 int gpio_direction[54];
 rpi_info rpiinfo;
-void _writeWarning(char *payload);
-void _writeError(char *payload);

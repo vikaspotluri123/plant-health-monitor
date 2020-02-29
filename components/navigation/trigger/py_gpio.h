@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013 Ben Croston
+Copyright (c) 2012-2016 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-int setupPWM(unsigned int channel, float frequency);
-int startPWM(unsigned int channel, float dutyCycle);
-int setDutyCycle(unsigned int channel, float dutyCycle);
-int setFrequency(unsigned int channel, float frequency);
-int stopPWM(unsigned int channel);
+int gpio_setup_channel(int channel, int direction, int initial);
+int gpio_init();
+int gpio_cleanup();

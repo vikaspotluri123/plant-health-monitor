@@ -20,15 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
+
 #include "c_gpio.h"
 #include "py_pwm.h"
 #include "common.h"
 
 #define GPIO_WARNINGS 1
 
-static int hasSetup = 0;
+int hasSetup = 0;
 
-static int mmap_gpio_mem(void) {
+int mmap_gpio_mem(void) {
    int result;
 
    if (hasSetup)
@@ -36,19 +38,19 @@ static int mmap_gpio_mem(void) {
 
    result = setup();
    if (result == SETUP_DEVMEM_FAIL) {
-      _writeError("No access to /dev/mem. Try running as root?\n");
+      printf("No access to /dev/mem. Try running as root?\n");
       return 1;
    } else if (result == SETUP_MALLOC_FAIL) {
-      _writeError("No Memory\n");
+      printf("No Memory\n");
       return 2;
    } else if (result == SETUP_MMAP_FAIL) {
-      _writeError("Mmap of GPIO registers failed\n");
+      printf("Mmap of GPIO registers failed\n");
       return 3;
    } else if (result == SETUP_CPUINFO_FAIL) {
-      _writeError("Unable to open /proc/cpuinfo\n");
+      printf("Unable to open /proc/cpuinfo\n");
       return 4;
    } else if (result == SETUP_NOT_RPI_FAIL) {
-      _writeError("Not running on a RPi!\n");
+      printf("Not running on a RPi!\n");
       return 5;
    } else { // result == SETUP_OK
       hasSetup = 1;
@@ -56,7 +58,7 @@ static int mmap_gpio_mem(void) {
    }
 }
 
-static int cleanup() {
+int gpio_cleanup() {
    // set everything back to input
    for (int i = 0; i < 54; ++i) {
       if (gpio_direction[i] != -1) {
@@ -69,7 +71,7 @@ static int cleanup() {
 }
 
 // @NOTE: The only mode this program supports is BCM
-static setupPin(int channel, int direction, int initial) {
+int gpio_setup_channel(int channel, int direction, int initial) {
    unsigned int gpio;
    int pud = PUD_OFF;
    int func;
@@ -79,7 +81,7 @@ static setupPin(int channel, int direction, int initial) {
    }
 
    if (direction != INPUT && direction != OUTPUT) {
-      _writeError("Invalid direction\n");
+      printf("Invalid direction\n");
       return 2;
    }
 
@@ -88,7 +90,7 @@ static setupPin(int channel, int direction, int initial) {
       (func != 0 && func != 1) || // already one of the alt functions or
       (gpio_direction[gpio] == -1 && func == 1) // already an output not set from this program
    )) {
-      _writeWarning("This channel is already in use, continuing anyway.\n");
+      printf("This channel is already in use, continuing anyway.\n");
    }
 
    if (direction == OUTPUT && (initial == LOW || initial == HIGH)) {
@@ -100,14 +102,14 @@ static setupPin(int channel, int direction, int initial) {
    return 0;
 }
 
-static init() {
+int gpio_init() {
    for (int i = 0; i < 54; ++i) {
       gpio_direction[i] = -1;
    }
 
    // detect board revision and set up accordingly
    if (get_rpi_info(&rpiinfo)) {
-      _writeError("This module can only be run on a Raspberry Pi!\n");
+      printf("This module can only be run on a Raspberry Pi!\n");
       return 1;
    }
 

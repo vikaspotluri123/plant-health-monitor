@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
+
 #include "soft_pwm.h"
 #include "py_pwm.h"
 #include "common.h"
@@ -32,25 +34,25 @@ typedef struct
     float dutycycle;
 } PWMObject;
 
-static void _requireSetup() {
-    _writeError("You need to setupPWM() before calling this method");
+void _requireSetup(char* method) {
+    printf("You need to setupPWM() before calling %s\n", method);
 }
 
-static int setupPWM(unsigned int channel, float frequency) {
+int setupPWM(unsigned int channel, float frequency) {
     // does soft pwm already exist on this channel?
     if (pwm_exists(channel)) {
-        _writeError("A PWM object already exists for this GPIO channel\n");
+        printf("A PWM object already exists for channel%d\n", channel);
         return 1;
     }
 
     // ensure channel set as output
     if (gpio_direction[channel] != OUTPUT) {
-        _writeError("You must setupPin() the channel as an output first\n");
+        printf("You must gpio_setup_pin() channel %d first\n", channel);
         return 2;
     }
 
     if (frequency <= 0.0) {
-        _writeError("frequency must be greater than 0.0\n");
+        printf("frequency must be greater than 0.0\n");
         return 3;
     }
 
@@ -58,14 +60,14 @@ static int setupPWM(unsigned int channel, float frequency) {
     return 0;
 }
 
-static int startPWM(unsigned int channel, float dutyCycle) {
+int startPWM(unsigned int channel, float dutyCycle) {
     if (!pwm_exists(channel)) {
-        _requireSetup();
+        _requireSetup("startPWM");
         return 1;
     }
 
     if (dutyCycle < 0.0 || dutyCycle > 100.0) {
-        _writeError("dutycycle must have a value from 0.0 to 100.0\n");
+        printf("dutycycle must have a value from 0.0 to 100.0\n");
         return 2;
     }
 
@@ -74,14 +76,14 @@ static int startPWM(unsigned int channel, float dutyCycle) {
     return 0;
 }
 
-static int setDutyCycle(unsigned int channel, float dutyCycle) {
+int setDutyCycle(unsigned int channel, float dutyCycle) {
     if (!pwm_exists(channel)) {
-        _requireSetup();
+        _requireSetup("setDutyCycle");
         return 1;
     }
 
     if (dutyCycle < 0.0 || dutyCycle > 100.0) {
-        _writeError("dutycycle must have a value from 0.0 to 100.0\n");
+        printf("dutycycle must have a value from 0.0 to 100.0\n");
         return 2;
     }
 
@@ -89,14 +91,14 @@ static int setDutyCycle(unsigned int channel, float dutyCycle) {
     return 0;
 }
 
-static int setFrequency(unsigned int channel, float frequency) {
+int setFrequency(unsigned int channel, float frequency) {
     if (!pwm_exists(channel)) {
-        _requireSetup();
+        _requireSetup("setFrequency");
         return 1;
     }
 
     if (frequency <= 0.0) {
-        _writeError("frequency must be greater than 0.0\n");
+        printf("frequency must be greater than 0.0\n");
         return 1;
     }
 
@@ -104,9 +106,9 @@ static int setFrequency(unsigned int channel, float frequency) {
     return 0;
 }
 
-static int stopPWM(unsigned int channel) {
+int stopPWM(unsigned int channel) {
     if (!pwm_exists(channel)) {
-        _requireSetup();
+        _requireSetup("stopPWM");
         return 1;
     }
 
