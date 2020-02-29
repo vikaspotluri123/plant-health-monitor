@@ -20,5 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-PyTypeObject PWMType;
-PyTypeObject *PWM_init_PWMType(void);
+static int setupPWM(unsigned int channel, float frequency);
+static int startPWM(unsigned int channel, float dutyCycle);
+static int setDutyCycle(unsigned int channel, float dutyCycle);
+static int setFrequency(unsigned int channel, float frequency);
+static int stopPWM(unsigned int channel);
