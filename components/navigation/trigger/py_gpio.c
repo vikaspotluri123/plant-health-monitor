@@ -72,7 +72,6 @@ int gpio_cleanup() {
 
 // @NOTE: The only mode this program supports is BCM
 int gpio_setup_channel(int channel, int direction, int initial) {
-   unsigned int gpio;
    int pud = PUD_OFF;
    int func;
 
@@ -85,20 +84,20 @@ int gpio_setup_channel(int channel, int direction, int initial) {
       return 2;
    }
 
-   func = gpio_function(gpio);
+   func = gpio_function(channel);
    if (GPIO_WARNINGS && (
       (func != 0 && func != 1) || // already one of the alt functions or
-      (gpio_direction[gpio] == -1 && func == 1) // already an output not set from this program
+      (gpio_direction[channel] == -1 && func == 1) // already an output not set from this program
    )) {
       printf("This channel is already in use, continuing anyway.\n");
    }
 
    if (direction == OUTPUT && (initial == LOW || initial == HIGH)) {
-      output_gpio(gpio, initial);
+      output_gpio(channel, initial);
    }
 
-   setup_gpio(gpio, direction, pud);
-   gpio_direction[gpio] = direction;
+   setup_gpio(channel, direction, pud);
+   gpio_direction[channel] = direction;
    return 0;
 }
 
@@ -112,6 +111,16 @@ int gpio_init() {
       printf("This module can only be run on a Raspberry Pi!\n");
       return 1;
    }
+
+   printf(
+      "Revision: %d, ram: %s, manufacturer: %s, processor: %s, type: %s, revision: %s\n",
+      rpiinfo.p1_revision,
+      rpiinfo.ram,
+      rpiinfo.manufacturer,
+      rpiinfo.processor,
+      rpiinfo.type,
+      rpiinfo.revision
+   );
 
    if (rpiinfo.p1_revision == 1) {
       pin_to_gpio = &pin_to_gpio_rev1;
