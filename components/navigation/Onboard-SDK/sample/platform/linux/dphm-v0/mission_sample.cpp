@@ -43,6 +43,7 @@ void onWayPoint(Vehicle* vehicle, RecvContainer recvFrame, UserData userData) {
   std::cout << "\tWaypoint Index:" << (unsigned)recvFrame.recvData.wayPointReachedData.waypoint_index << '\n';
   std::cout << "\tIncident Type:" << (unsigned)recvFrame.recvData.wayPointReachedData.incident_type << '\n';
   std::cout << "\tCurrent Status:" << (unsigned)recvFrame.recvData.wayPointReachedData.current_status << '\n';
+  trigger();
 }
 
 bool

@@ -59,7 +59,7 @@ int die(int code) {
   return code;
 }
 
-int main() {
+int trigger() {
   int result;
 
   result = main_setup();
