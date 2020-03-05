@@ -41,7 +41,7 @@
 #include "mission_sample.hpp"
 
 
-#include "./trigger/py_gpio.h"
+//#include "./trigger/c_gpio.h"
 #include "./trigger/py_gpio.h"
 #include "./trigger/py_pwm.h"
 
