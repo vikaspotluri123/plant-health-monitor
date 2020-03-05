@@ -42,7 +42,6 @@
 
 // Helpers
 #include <dji_linux_helpers.hpp>
-#include "./trigger/trigger.c"
 
 bool runDPHMMission(DJI::OSDK::Vehicle* vehicle, int responseTimeout);
 
