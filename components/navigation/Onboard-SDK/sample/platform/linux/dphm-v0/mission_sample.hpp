@@ -42,10 +42,6 @@
 
 // Helpers
 #include <dji_linux_helpers.hpp>
-#include "./trigger/c_gpio.h"
-#include "./trigger/py_gpio.h"
-#include "./trigger/py_pwm.h"
-#include "./trigger/trigger.c"
 
 bool runDPHMMission(DJI::OSDK::Vehicle* vehicle, int responseTimeout);
 
