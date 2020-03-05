@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "c_gpio.h"
-#include "py_gpio.h"
-#include "py_pwm.h"
+//#include "c_gpio.h"
+//#include "py_gpio.h"
+//#include "py_pwm.h"
 
 #define PIN 18
 
