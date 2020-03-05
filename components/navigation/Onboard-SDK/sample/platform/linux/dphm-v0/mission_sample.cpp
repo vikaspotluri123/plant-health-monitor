@@ -34,10 +34,12 @@
 #include <fstream>
 #include <sstream>
 #include <dji_open_protocol.hpp>
-#include "mission_sample.hpp"
 
 #include <stdio.h>
 #include <unistd.h>
+
+#include "mission_sample.hpp"
+
 
 #include "./trigger/c_gpio.h"
 #include "./trigger/py_gpio.h"
