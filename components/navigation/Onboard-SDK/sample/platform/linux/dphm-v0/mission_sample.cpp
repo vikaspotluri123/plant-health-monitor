@@ -49,6 +49,7 @@ using namespace DJI::OSDK;
 using namespace DJI::OSDK::Telemetry;
 
 #define PIN 18
+#define OUTPUT 0
 
 int main_setup() {
   int result;
